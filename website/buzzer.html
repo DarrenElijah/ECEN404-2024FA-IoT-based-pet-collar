@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Sound</title>
+</head>
+<body>
+    <button id="toggleSoundButton">Toggle Sound</button>
+    <audio id="sound" src="buzzer.mp3" loop></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<script>
+    const soundButton = document.getElementById('toggleSoundButton');
+    const sound = document.getElementById('sound');
+
+    let isSoundPlaying = false;
+
+    soundButton.addEventListener('click', function() {
+        if (isSoundPlaying) {
+            sound.pause();
+        } else {
+            sound.play();
+        }
+        isSoundPlaying = !isSoundPlaying;
+    });
+
+</script>

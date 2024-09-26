@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pet Tracker WatchDog - Tracking</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+#map {
+    height: 400px;
+    width: 100%;
+}
+h1 {
+    font-family: 'Roboto', sans-serif; 
+    font-size: 3rem; 
+    font-weight: bold; 
+    color: #008080; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+}
+
+</style>
+
+</head>
+<body>
+
+
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Home</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Tracking</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="features.html">Feature Activation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="about.html">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="contacts.html">Contact/Settings</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<!-- Main content -->
+<div class="container-fluid main-content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="w3-row w3-padding-64">
+          <div class="w3-container w3-center">
+            <h1 class="display-4 text-center">View GPS tracking/Safe area</h1>
+            <p class="lead text-center">This is the Tracking page. You will be able to view your pet's location as well as create/view safe areas.</p>
+          </div>
+        </div>
+  
+        <input type="text" id="addressInput" class="form-control mb-2" placeholder="Enter address">
+        <input type="number" id="radiusInput" class="form-control mb-2" placeholder="Enter radius (in meters)">
+        <button onclick="createGeofence()" class="btn btn-primary mb-3">Create Geofence</button>
+        <button onclick="getLiveLocation()" class="btn btn-primary mb-3">Get Live Location</button>
+        <button onclick="createCustomGeofence()" class="btn btn-primary mb-3">Use Refined Safe area</button>
+
+
+
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="footer mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <span class="text-muted">Made By Team 34</span>
+    </div>
+  </footer>
+
+<script>
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+    }
+
+    let map;
+    let circle;
+    let polygon;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 0, lng: 0 },
+            zoom: 12
+        });
+
+        loadSavedGeofence(); // Load saved geofence when the map is initialized
+    }
+
+    function createGeofence() {
+        const address = document.getElementById('addressInput').value;
+        const radius = parseInt(document.getElementById('radiusInput').value); // Parse radius as an integer
+        const geocoder = new google.maps.Geocoder();
+
+        if (polygon) {
+            polygon.setMap(null);
+            localStorage.removeItem('savedCustomGeofence');
+        }
+
+        geocoder.geocode({ address: address }, function (results, status) {
+            if (status === 'OK') {
+                const location = results[0].geometry.location;
+
+                if (circle) {
+                    circle.setMap(null); // Remove existing circle from the map
+                    localStorage.removeItem('savedGeofence'); // Remove saved geofence from localStorage
+                }
+
+        
+                circle = new google.maps.Circle({
+                    strokeColor: '#3CB043',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#74B72E',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: location,
+                    radius: radius
+                });
+
+                // Fit the map bounds to the circle's bounds
+                const circleBounds = circle.getBounds();
+                map.fitBounds(circleBounds);
+
+                // Center the map to the circle's center
+                map.setCenter(location);
+
+                // Save address and radius to localStorage
+                saveGeofence(address, radius);
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+
+    // Function to load the saved geofence from localStorage
+    function loadSavedGeofence() {
+        const savedGeofence = JSON.parse(localStorage.getItem('savedGeofence'));
+        if (savedGeofence) {
+            document.getElementById('addressInput').value = savedGeofence.address;
+            document.getElementById('radiusInput').value = savedGeofence.radius;
+            createGeofence(); // Recreate the geofence when the page loads
+        }
+    }
+
+    // Function to save the geofence to localStorage
+    function saveGeofence(address, radius) {
+        const geofence = { address, radius };
+        localStorage.setItem('savedGeofence', JSON.stringify(geofence));
+    }
+
+    // Call createGeofence() when Enter key is pressed in address or radius input fields
+    document.getElementById('addressInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            createGeofence();
+        }
+    });
+
+    document.getElementById('radiusInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            createGeofence();
+        }
+    });
+
+
+    
+
+
+    // Function to get the live location of the laptop
+    function getLiveLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const laptopLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            // Check if custom geofence is active
+            const savedGeofence = JSON.parse(localStorage.getItem('savedGeofence'));
+            const savedCustomGeofence = JSON.parse(localStorage.getItem('savedCustomGeofence'));
+
+            if (savedCustomGeofence && !savedGeofence) {
+                const customPolygon = new google.maps.Polygon({
+                    paths: savedCustomGeofence,
+                });
+
+                // Check if laptopLocation is within the custom polygon geofence
+                if (google.maps.geometry.poly.containsLocation(
+                    new google.maps.LatLng(laptopLocation.lat, laptopLocation.lng),
+                    customPolygon
+                )) {
+                    alert('Laptop is WITHIN the custom geofence!');
+                } else {
+                    alert('Laptop is OUTSIDE the custom geofence!');
+                    sendMail();
+                }
+            } else{
+                // Check if laptopLocation is within the circle geofence if custom geofence is not active
+                if (google.maps.geometry.spherical.computeDistanceBetween(
+                    new google.maps.LatLng(laptopLocation.lat, laptopLocation.lng),
+                    circle.getCenter()
+                ) <= circle.getRadius()) {
+                    alert('Laptop is WITHIN the circle geofence!');
+                } else {
+                    alert('Laptop is OUTSIDE the circle geofence!');
+                    sendMail();
+                }
+            }
+
+            // Add a marker for the laptop's live location
+            const laptopMarker = new google.maps.Marker({
+                position: laptopLocation,
+                map: map,
+                title: 'Laptop Location'
+            });
+        }, function(error) {
+            console.error('Error getting location:', error);
+        });
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script>
+
+    function sendMail(){
+        (function(){
+            emailjs.init("rurcwwXebAHXLO9il");
+        })();
+        
+        var serviceID = "service_okxndic";
+        var templateID = "template_weta81g";
+
+        emailjs.send(serviceID, templateID)
+        .then( res => {
+            alert("Email Sent Successfull")
+        })
+        .catch();
+
+    }
+
+    //this is hardcoded until custom save area data received
+    var verticesSafeArea = [
+    { lat: 30.618436088727393, lng: -96.33650431896704 },
+    { lat: 30.619336088727394, lng: -96.33650431896704 },
+    { lat: 30.619936088727393, lng: -96.33690431896704 },
+    { lat: 30.620836088727394, lng: -96.33790431896705 },
+    { lat: 30.621236088727393, lng: -96.33870431896705 },
+    { lat: 30.621236088727393, lng: -96.34030431896704 },
+    { lat: 30.62043608872739, lng: -96.34130431896705 },
+    { lat: 30.619836088727393, lng: -96.34160431896704 },
+    { lat: 30.61883608872739, lng: -96.34170431896705 },
+    { lat: 30.618136088727393, lng: -96.34150431896705 },
+    { lat: 30.616936088727392, lng: -96.34060431896705 },
+    { lat: 30.616636088727393, lng: -96.34000431896705 },
+    { lat: 30.616436088727394, lng: -96.33900431896704 },
+    { lat: 30.616636088727393, lng: -96.33800431896705 },
+    { lat: 30.617536088727395, lng: -96.33700431896705 },
+    { lat: 30.618436088727393, lng: -96.33650431896704 }
+];
+
+
+
+</script>
+
+<script>
+    function createCustomGeofence() {
+
+        if (circle) {
+            circle.setMap(null); // Remove existing circle from the map
+            localStorage.removeItem('savedGeofence'); // Remove saved geofence from localStorage
+        }
+        
+        if (polygon) {
+            polygon.setMap(null);
+            localStorage.removeItem('savedCustomGeofence');
+        }
+
+
+    // Create custom geofence
+    if (verticesSafeArea.length > 0) {
+        const verticesLatLng = verticesSafeArea.map(vertex => ({
+            lat: vertex.lat,
+            lng: vertex.lng
+        }));
+
+        polygon = new google.maps.Polygon({
+            paths: verticesLatLng,
+            strokeColor: '#3CB043',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#74B72E',
+            fillOpacity: 0.35,
+        });
+
+        // Set the polygon on the map
+        polygon.setMap(map);
+
+        // Calculate the bounds of the polygon
+        const polygonBounds = new google.maps.LatLngBounds();
+        verticesLatLng.forEach(vertex => {
+            polygonBounds.extend(vertex);
+        });
+
+        // Fit the map bounds to the polygon's bounds
+        map.fitBounds(polygonBounds);
+
+        // Save the custom geofence vertices to local storage
+        saveCustomGeofence(verticesSafeArea);
+
+
+    }
+
+}
+
+// Function to save the custom geofence vertices to local storage
+function saveCustomGeofence(vertices) {
+    localStorage.setItem('savedCustomGeofence', JSON.stringify(vertices));
+}
+
+
+
+</script>
+
+
+
+
+
+
+
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
+</body>
+</html>
+
