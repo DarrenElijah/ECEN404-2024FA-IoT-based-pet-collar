@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw Polygon Geofence</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=drawing"></script>
+  <script>
+    var map;
+    var drawingManager;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 0, lng: 0},
+        zoom: 2
+      });
+
+      drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.POLYGON,
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: ['polygon']
+        },
+        polygonOptions: {
+          editable: true,
+          draggable: true
+        }
+      });
+
+      drawingManager.setMap(map);
+
+      google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+        if (event.type === google.maps.drawing.OverlayType.POLYGON) {
+          var polygon = event.overlay;
+          var coordinates = polygon.getPath().getArray();
+          console.log('Polygon Coordinates:', coordinates);
+          // You can now do something with the polygon coordinates, such as store them or perform geofencing.
+          
+        }
+      });
+    }
+  </script>
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&callback=initMap&libraries=drawing"></script>
+</body>
+</html>

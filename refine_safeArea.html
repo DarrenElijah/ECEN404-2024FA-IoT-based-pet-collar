@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pet Tracker WatchDog - Refined Safe Area</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    #mapSunday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapMonday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapTuesday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapWednesday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapThursday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapFriday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapSaturday {
+      height: 400px;
+      width: 100%;
+    }
+    #mapArea {
+      height: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      font-family: 'Roboto', sans-serif; 
+      font-size: 3rem; 
+      font-weight: bold; 
+      color: #008080; 
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+    }
+  </style>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="tracking.html">Tracking</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="features.html">Feature Activation</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Refine Safe area</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="about.html">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="contacts.html">Contact/Settings</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main content -->
+<div class="container-fluid main-content">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+      <h1 class="display-4">Refine safe area</h1>
+      <p class="lead">This is the machine learning page, ML is used to refine safe area to better fit pets movements</p>
+    </div>
+  </div>
+</div>
+
+<div class="w3-container w3-center">
+  <div class="w3-bar" style="display: flex; justify-content: center;">
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Sunday')">Sunday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Monday')">Monday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tuesday')">Tuesday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Wednesday')">Wednesday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Thursday')">Thursday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Friday')">Friday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Saturday')">Saturday</button>
+      <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'refinedArea')">Refined Safe Area</button>
+  </div>
+</div>
+
+
+<div id="Sunday" class="w3-container tab" style="display:none;">
+  <h3>Sunday</h3>
+  <div id="mapSunday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Monday" class="w3-container tab" style="display:none;">
+  <h3>Monday</h3>
+  <div id="mapMonday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Tuesday" class="w3-container tab" style="display:none;">
+  <h3>Tuesday</h3>
+  <div id="mapTuesday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Wednesday" class="w3-container tab" style="display:none;">
+  <h3>Wednesday</h3>
+  <div id="mapWednesday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Thursday" class="w3-container tab" style="display:none;">
+  <h3>Thursday</h3>
+  <div id="mapThursday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Friday" class="w3-container tab" style="display:none;">
+  <h3>Friday</h3>
+  <div id="mapFriday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="Saturday" class="w3-container tab" style="display:none;">
+  <h3>Saturday</h3>
+  <div id="mapSaturday" class="w3-container w3-margin-bottom"></div>
+</div>
+
+<div id="refinedArea" class="w3-container tab" style="display:none;">
+  <h3>Refined Safe Area for the week</h3>
+  <div id="mapArea" class="w3-container w3-margin-bottom"></div>
+</div>
+
+
+<!-- Footer -->
+<footer class="footer mt-auto py-3 bg-dark text-white">
+  <div class="container text-center">
+    <span class="text-muted">Made By Team 34</span>
+  </div>
+</footer>
+
+<script>
+  
+  // Get the DIV with overlay effect
+  var overlayBg = document.getElementById("myOverlay");
+  
+  // Toggle between showing and hiding the sidebar, and add overlay effect
+  function w3_open() {
+    if (mySidebar.style.display === 'block') {
+      mySidebar.style.display = 'none';
+      overlayBg.style.display = "none";
+    } else {
+      mySidebar.style.display = 'block';
+      overlayBg.style.display = "block";
+    }
+  }
+  
+  // Close the sidebar with the close button
+  function w3_close() {
+    mySidebar.style.display = "none";
+    overlayBg.style.display = "none";
+  }
+  
+  // Initialize Google Maps for each tab
+  var mapSunday, mapMonday, mapTuesday, mapWednesday, mapThursday, mapFriday, mapSaturday, mapArea;
+  
+  
+  // Function to draw geofence
+  // ADD RADIUS
+  /*function drawGeofence(map, centerCoords, radius) {
+    // Define the circle
+    var circle = new google.maps.Circle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map,
+      center: centerCoords,
+      radius: radius 
+    });
+  }
+  */
+  
+  function drawGeofencePolygon(map, vertices) {
+    // Define the polygon
+    var polygon = new google.maps.Polygon({
+      paths: vertices,
+      strokeColor: '#3CB043',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#74B72E',
+      fillOpacity: 0.35,
+      map: map
+    });
+  }
+  
+  // Function to generate random coordinates for a polygon with 4 to 8 sides
+  /*function generateRandomCoordinates(center, radius) {
+    // Generate a random number of sides between 3 and 8
+    var numSides = Math.floor(Math.random() * 6) + 3;
+    var vertices = [];
+  
+    // Calculate the angle between each vertex
+    var angleIncrement = (2 * Math.PI) / numSides;
+  
+    // Generate coordinates for each vertex with random side lengths
+    for (var i = 0; i < numSides; i++) {
+      // Generate a random side length
+      var randomRadius = radius * (0.5 + Math.random()); // Adjust the multiplier as needed for reasonable lengths
+  
+      // Calculate coordinates based on the random side length
+      var angle = i * angleIncrement;
+      var dx = randomRadius * Math.cos(angle);
+      var dy = randomRadius * Math.sin(angle);
+      var vertex = {
+        lat: center.lat + dy,
+        lng: center.lng + dx
+      };
+      vertices.push(vertex);
+    }
+  
+    // Close the polygon by adding the first vertex at the end
+    vertices.push(vertices[0]);
+  
+    return vertices;
+  }
+
+*/
+
+var verticesSunday = [
+    { lat: 30.619049, lng: -96.33542075237679 },
+    { lat: 30.62191975847592, lng: -96.33652324152408 },
+    { lat: 30.622175025741555, lng: -96.339394 },
+    { lat: 30.621589556954973, lng: -96.34193455695497 },
+    { lat: 30.619049, lng: -96.34343482973375 },
+    { lat: 30.61777335087583, lng: -96.34066964912417 },
+    { lat: 30.61629283993076, lng: -96.339394 },
+    { lat: 30.616071038237738, lng: -96.33641603823774 },
+    { lat: 30.619049, lng: -96.33542075237679 }
+];
+
+var verticesMonday = [
+    { lat: 30.619049, lng: -96.33613285869609 },
+    { lat: 30.621901712626677, lng: -96.33846709747989 },
+    { lat: 30.620521897109512, lng: -96.34142126895225 },
+    { lat: 30.616903515115933, lng: -96.34234700660507 },
+    { lat: 30.616733648052737, lng: -96.33864169654862 },
+    { lat: 30.619049, lng: -96.33613285869609 }
+];
+
+var verticesTuesday = [
+    { lat: 30.619049, lng: -96.33520431896704 },
+    { lat: 30.620635829152768, lng: -96.33780717084723 },
+    { lat: 30.621539960200952, lng: -96.339394 },
+    { lat: 30.62067694634726, lng: -96.34102194634725 },
+    { lat: 30.619049, lng: -96.34348743962796 },
+    { lat: 30.617745325015008, lng: -96.340697674985 },
+    { lat: 30.615339208284905, lng: -96.339394 },
+    { lat: 30.616045005467267, lng: -96.33639000546727 },
+    { lat: 30.619049, lng: -96.33520431896704 }
+];
+
+var verticesWednesday = [
+    { lat: 30.619049, lng: -96.33589089756462 },
+    { lat: 30.62210503265181, lng: -96.34115840127417 },
+    { lat: 30.616435078615776, lng: -96.34090314821482 },
+    { lat: 30.619049, lng: -96.33589089756462 }
+];
+
+var verticesThursday = [
+    { lat: 30.619049, lng: -96.3367042316001 },
+    { lat: 30.62244322830225, lng: -96.33829114837108 },
+    { lat: 30.6207075949698, lng: -96.34167686012981 },
+    { lat: 30.61720074101315, lng: -96.34193791025385 },
+    { lat: 30.61564898323636, lng: -96.33828926758596 },
+    { lat: 30.619049, lng: -96.3367042316001 }
+];
+
+var verticesFriday = [
+    { lat: 30.619049, lng: -96.33701066601088 },
+    { lat: 30.620917019635666, lng: -96.3404725016395 },
+    { lat: 30.616672806242022, lng: -96.34076589610581 },
+    { lat: 30.619049, lng: -96.33701066601088 }
+];
+
+var verticesSaturday = [
+    { lat: 30.619049, lng: -96.33542378880597 },
+    { lat: 30.620948755532126, lng: -96.33829717563214 },
+    { lat: 30.62140432839715, lng: -96.34075384948412 },
+    { lat: 30.619049, lng: -96.34181558166715 },
+    { lat: 30.615516081823205, lng: -96.3414337312604 },
+    { lat: 30.615336088727393, lng: -96.33725034967728 },
+    { lat: 30.619049, lng: -96.33542378880597 }
+];
+
+
+var verticesSafeArea = [
+    { lat: 30.618436088727393, lng: -96.33650431896704 },
+    { lat: 30.619336088727394, lng: -96.33650431896704 },
+    { lat: 30.619936088727393, lng: -96.33690431896704 },
+    { lat: 30.620836088727394, lng: -96.33790431896705 },
+    { lat: 30.621236088727393, lng: -96.33870431896705 },
+    { lat: 30.621236088727393, lng: -96.34030431896704 },
+    { lat: 30.62043608872739, lng: -96.34130431896705 },
+    { lat: 30.619836088727393, lng: -96.34160431896704 },
+    { lat: 30.61883608872739, lng: -96.34170431896705 },
+    { lat: 30.618136088727393, lng: -96.34150431896705 },
+    { lat: 30.616936088727392, lng: -96.34060431896705 },
+    { lat: 30.616636088727393, lng: -96.34000431896705 },
+    { lat: 30.616436088727394, lng: -96.33900431896704 },
+    { lat: 30.616636088727393, lng: -96.33800431896705 },
+    { lat: 30.617536088727395, lng: -96.33700431896705 },
+    { lat: 30.618436088727393, lng: -96.33650431896704 }
+];
+
+
+
+
+  // Open the default tab on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    initMaps(); // Initialize maps for all days of the week
+    document.getElementsByClassName("tablink")[0].click(); // Open the first tab (Sunday)
+  }, false);
+  
+  // Function to open tabs
+  function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+  
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" w3-dark-grey", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " w3-dark-grey";
+  
+    // Initialize map and draw geofence for the selected day
+    switch (tabName) {
+      case 'Sunday':
+        if (!mapSunday) {
+          mapSunday = new google.maps.Map(document.getElementById('mapSunday'), {
+            //center of map view
+            center: {lat: 30.616249, lng: -96.336853},
+            zoom: 15
+          });
+          //center of geofence polygon
+          //var centerCoordsSunday = {lat: 30.616249, lng: -96.336853};
+          //var verticesSunday = generateRandomCoordinates(centerCoordsSunday, 0.002); // Adjust the radius as needed
+          drawGeofencePolygon(mapSunday, verticesSunday);
+        }
+        break;
+      case 'Monday':
+        if (!mapMonday) {
+          mapMonday = new google.maps.Map(document.getElementById('mapMonday'), {
+            center: {lat: 30.616249, lng: -96.336853},
+            zoom: 15
+          });
+          //var centerCoordsMonday = {lat: 30.616249, lng: -96.336853};
+          //var verticesMonday = generateRandomCoordinates(centerCoordsMonday, 0.003); // Adjust the radius as needed
+          drawGeofencePolygon(mapMonday, verticesMonday);
+        }
+        break;
+      case 'Tuesday':
+        if (!mapTuesday) {
+          mapTuesday = new google.maps.Map(document.getElementById('mapTuesday'), {
+              center: {lat: 30.616249, lng: -96.336853},
+              zoom: 15
+            });
+          //var centerCoordsTuesday = {lat: 30.616249, lng: -96.336853};
+          //var verticesTuesday = generateRandomCoordinates(centerCoordsTuesday, 0.003);
+          drawGeofencePolygon(mapTuesday, verticesTuesday);
+          }
+        break;
+      case 'Wednesday':
+        if (!mapWednesday) {
+              mapWednesday = new google.maps.Map(document.getElementById('mapWednesday'), {
+              center: {lat: 30.616249, lng: -96.336853},
+              zoom: 15
+            });
+          //var centerCoordsWednesday = {lat: 30.616249, lng: -96.336853};
+          //var verticesWednesday = generateRandomCoordinates(centerCoordsWednesday, 0.002); 
+          drawGeofencePolygon(mapWednesday, verticesWednesday);
+          }
+        break;
+      case 'Thursday':
+        if (!mapThursday) {
+            mapThursday = new google.maps.Map(document.getElementById('mapThursday'), {
+              center: {lat: 30.616249, lng: -96.336853},
+              zoom: 15
+            });
+          //var centerCoordsThursday = {lat: 30.616249, lng: -96.336853};
+          //var verticesThursday = generateRandomCoordinates(centerCoordsThursday, 0.004); 
+          drawGeofencePolygon(mapThursday, verticesThursday);
+          }
+        break;
+      case 'Friday':
+        if (!mapFriday) {
+            mapFriday = new google.maps.Map(document.getElementById('mapFriday'), {
+              center: {lat: 30.616249, lng: -96.336853},
+              zoom: 15
+            });
+          //var centerCoordsFriday = {lat: 30.616249, lng: -96.336853};
+         // var verticesFriday = generateRandomCoordinates(centerCoordsFriday, 0.004); 
+          drawGeofencePolygon(mapFriday, verticesFriday);
+          }
+        break;
+      case 'Saturday':
+        if (!mapSaturday) {
+          mapSaturday = new google.maps.Map(document.getElementById('mapSaturday'), {
+            center: {lat: 30.616249, lng: -96.336853},
+            zoom: 15
+          });
+          //var centerCoordsSaturday = {lat: 30.616249, lng: -96.336853};
+         // var verticesSaturday = generateRandomCoordinates(centerCoordsSaturday, 0.004); 
+          drawGeofencePolygon(mapSaturday, verticesSaturday);
+         }
+        break;
+        case 'refinedArea':
+        if (!mapArea) {
+          mapArea = new google.maps.Map(document.getElementById('mapArea'), {
+            center: {lat: 30.616249, lng: -96.336853},
+            zoom: 15
+          });
+          //var centerCoordsArea = {lat: 30.616249, lng: -96.336853};
+          //var verticesArea = generateRandomCoordinates(centerCoordsArea, 0.004); 
+          drawGeofencePolygon(mapArea, verticesSafeArea);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  </script>
+  
+  
+<!-- Load Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
+<script src="script.js"></script>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

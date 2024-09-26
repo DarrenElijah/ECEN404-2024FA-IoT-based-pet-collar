@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pet Tracker WatchDog - Feature Activation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="script.js"></script>
+
+  <style>
+    h1 {
+      font-family: 'Roboto', sans-serif; 
+      font-size: 3rem; 
+      font-weight: bold; 
+      color: #008080; 
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+    }
+  </style>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="tracking.html">Tracking</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Feature Activation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="about.html">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="contacts.html">Contact/Settings</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main content -->
+<div class="container-fluid main-content">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+      <h1 class="display-4 text-center">Activate Features</h1>
+      <p class="lead text-center">You will be able to activate or deactivate features here including GPS tracking, live video feed, and buzzer.</p>
+    </div>
+  </div>
+</div>
+
+
+<div class="text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <button id="toggleButton" onclick="toggleCamera()" class="btn btn-primary btn-lg btn-block">Video Feed</button>
+        <video id="videoElement" autoplay></video>
+      </div>
+      <div class="col-md-6">
+        <button id="buzzerButton" class="btn btn-primary btn-lg btn-block">Buzzer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Added audio element -->
+<div class="w3-container w3-center mt-4">
+  <audio id="sound" src="buzzer.mp3" loop></audio>
+</div>
+
+<!-- Footer -->
+<footer class="footer mt-auto py-3 bg-dark text-white">
+  <div class="container text-center">
+    <span class="text-muted">Made By Team 34</span>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+
+  // Function to toggle the camera feed on/off
+  let videoStream = null;
+  async function toggleCamera() {
+      const videoElement = document.getElementById('videoElement');
+      const toggleButton = document.getElementById('toggleButton');
+  
+      try {
+          if (!videoStream) {
+              // Access the user's camera and start the video stream
+              videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+              videoElement.srcObject = videoStream;
+              toggleButton.textContent = 'Stop Feed'; // Change button text to indicate stopping feed
+          } else {
+              // If the camera feed is already on, stop the stream
+              const tracks = videoStream.getTracks();
+              tracks.forEach(track => track.stop());
+              videoElement.srcObject = null;
+              videoStream = null;
+              toggleButton.textContent = 'Video Feed'; // Change button text to indicate starting feed
+          }
+      } catch (error) {
+          console.error('Error accessing camera:', error); // Log any errors encountered while accessing the camera
+      }
+  }
+  
+  // Functionality for the sound button
+  const soundButton = document.getElementById('buzzerButton');
+  const sound = document.getElementById('sound');
+  
+  let isSoundPlaying = false;
+  
+  soundButton.addEventListener('click', function() {
+      // Toggle between playing and pausing the sound
+      if (isSoundPlaying) {
+          sound.pause();
+          document.getElementById('buzzerButton').innerText = 'Buzzer'; // Change button text back to original state
+      } else {
+          sound.play();
+          document.getElementById('buzzerButton').innerText = 'Stop Buzzer'; // Change button text to indicate stopping sound
+      }
+      isSoundPlaying = !isSoundPlaying;
+  });
+  
+  </script>
+  
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
