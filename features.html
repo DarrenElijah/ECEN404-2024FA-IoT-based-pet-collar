@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="script.js"></script>
 
+    <!-- hls.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> 
+
+
   <style>
     h1 {
       font-family: 'Roboto', sans-serif; 
@@ -70,7 +74,7 @@
     <div class="row">
       <div class="col-md-6">
         <button id="toggleButton" onclick="toggleCamera()" class="btn btn-primary btn-lg btn-block">Video Feed</button>
-        <video id="videoElement" autoplay></video>
+        <video id="videoElement" controls autoplay muted playsinline width="100%" height="auto"></video>
       </div>
       <div class="col-md-6">
         <button id="buzzerButton" class="btn btn-primary btn-lg btn-block">Buzzer</button>
@@ -96,27 +100,38 @@
 <script>
 
   // Function to toggle the camera feed on/off
-  let videoStream = null;
-  async function toggleCamera() {
+  let hls;
+  function toggleCamera() {
       const videoElement = document.getElementById('videoElement');
       const toggleButton = document.getElementById('toggleButton');
-  
-      try {
-          if (!videoStream) {
-              // Access the user's camera and start the video stream
-              videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-              videoElement.srcObject = videoStream;
-              toggleButton.textContent = 'Stop Feed'; // Change button text to indicate stopping feed
-          } else {
-              // If the camera feed is already on, stop the stream
-              const tracks = videoStream.getTracks();
-              tracks.forEach(track => track.stop());
-              videoElement.srcObject = null;
-              videoStream = null;
-              toggleButton.textContent = 'Video Feed'; // Change button text to indicate starting feed
+
+      if (videoElement.src) {
+          // Stop the stream
+          if (hls) {
+              hls.destroy();
+              hls = null;
           }
-      } catch (error) {
-          console.error('Error accessing camera:', error); // Log any errors encountered while accessing the camera
+          videoElement.src = '';
+          toggleButton.textContent = 'Video Feed';
+      } else {
+          const streamURL = '/stream.m3u8'; // Ensure the correct path to the HLS playlist
+          if (Hls.isSupported()) {
+              hls = new Hls();
+              hls.loadSource(streamURL);
+              hls.attachMedia(videoElement);
+              hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                  videoElement.play();
+              });
+          } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+              // For Safari and native HLS support
+              videoElement.src = streamURL;
+              videoElement.addEventListener('loadedmetadata', function () {
+                  videoElement.play();
+              });
+          } else {
+              alert('Your browser does not support HLS playback.');
+          }
+          toggleButton.textContent = 'Stop Feed';
       }
   }
   
