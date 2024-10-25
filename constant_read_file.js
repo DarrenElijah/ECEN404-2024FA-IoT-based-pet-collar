@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 const fs = require('fs');
 const path = require('path');
 
-const uri = "mongodb://10.0.0.5:27017";
+const uri = "mongodb+srv://darrenelijah19:Barcel0na1@coordcluster.pa9fg.mongodb.net/";
 const client = new MongoClient(uri, {
     tls: true, // Enable TLS connection
     tlsAllowInvalidCertificates: true, // Allow invalid certificates (use with caution)
@@ -13,8 +13,8 @@ const outputFile = path.join(__dirname, 'coordinates_by_day.json');
 async function readAndLogCoordinates() {
   try {
     await client.connect();
-    const database = client.db("coordinates_db"); // Database name
-    const collection = database.collection("coordinates_collection"); // Collection name
+    const database = client.db("ECEN404"); // Database name
+    const collection = database.collection("CoordsGPS"); // Collection name
 
     console.log("Connected to MongoDB");
 
