@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pet Tracker WatchDog - Tracking</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Include Bootstrap CSS and other styles --> 
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <!-- Include Font Awesome for icons (if needed) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    /* Existing styles */
+    #map {
+      height: 80vh; /* Adjusted to occupy 80% of the viewport height */
+      width: 100%;
+    }
+    h1 {
+      font-family: 'Roboto', sans-serif; 
+      font-size: 3rem; 
+      font-weight: bold; 
+      color: #008080; 
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <!-- Update the links as per your website structure -->
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Tracking</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="features.html">Feature Activation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="contacts.html">Contact/Settings</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<!-- Main content -->
+<div class="container-fluid main-content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="w3-row w3-padding-64">
+        <div class="w3-container w3-center">
+          <h1 class="display-4 text-center">View GPS Tracking / Safe Area</h1>
+          <p class="lead text-center">This is the Tracking page. You will be able to view your pet's location as well as create/view safe areas.</p>
+        </div>
+      </div>
+
+      <input type="text" id="addressInput" class="form-control mb-2" placeholder="Enter address">
+      <div class="d-flex justify-content-center mb-3">
+        <button onclick="createGeofence()" class="btn btn-primary mr-2">Go to Address</button>
+        <button class="btn btn-primary mr-2" id="toggleInstructionsBtn">Show Instructions</button>
+        <!-- Button to Open Saved Geofences Modal -->
+        <button class="btn btn-primary mr-2" type="button" id="savedGeofencesButton" data-toggle="modal" data-target="#savedGeofencesModal">
+          Saved Geofences
+        </button>
+      </div>
+
+      <div id="instructions" style="display:none;" class="mb-3">
+        <h4>Instructions</h4>
+        <p>Use the drawing tools on the map to create or edit your geofence:</p>
+        <ul>
+          <li>First apply an address to get the desired general location</li>
+          <li>Click on the polygon drawing tool in the toolbar (top of the map).</li>
+          <li>Click on the map to place vertices of your geofence polygon.</li>
+          <li>Click back on the first vertex to close the polygon.</li>
+          <li>You can edit the polygon by dragging the vertices.</li>
+          <li>When you're done, you can save the geofence by providing a name.</li>
+          <li>Clicking Saved geofences allows you to view, apply, and delete previously made geofences</li>
+        </ul>
+      </div>
+
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Saved Geofences Modal -->
+<div class="modal fade" id="savedGeofencesModal" tabindex="-1" aria-labelledby="savedGeofencesModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"> <!-- Modal Header -->
+        <h5 class="modal-title" id="savedGeofencesModalLabel">Saved Geofences</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body"> <!-- Modal Body -->
+        <div id="savedGeofencesList"></div>
+      </div>
+      <div class="modal-footer"> <!-- Modal Footer -->
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer mt-auto py-3 bg-dark text-white">
+  <div class="container text-center">
+    <span class="text-muted">Made By Team 34</span>
+  </div>
+</footer>
+
+<!-- Include Socket.IO client library -->
+<script src="/socket.io/socket.io.js"></script>
+<!-- Include EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<!-- Include jQuery and Bootstrap JS -->
+<!-- Use the full version of jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Include Popper.js and Bootstrap JS (for Bootstrap features) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+// Initialize EmailJS
+(function(){
+    emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
+})();
+
+let map;
+let trackingMarker;
+let previousInsideGeofence = null;
+
+// New variables for smooth animation
+let animationInterval;
+const animationDuration = 1000; // Duration of the animation in milliseconds
+
+function initMap() {
+  // Initialize the map
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 30.616249, lng: -96.336853 },
+    zoom: 15
+  });
+
+  // Initialize the DrawingManager
+  const drawingManager = new google.maps.drawing.DrawingManager({
+    drawingMode: null,
+    drawingControl: true,
+    drawingControlOptions: {
+      position: google.maps.ControlPosition.TOP_CENTER,
+      drawingModes: ['polygon']
+    },
+    polygonOptions: {
+      strokeColor: '#3CB043',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#74B72E',
+      fillOpacity: 0.35,
+      editable: true,
+      draggable: false
+    }
+  });
+
+  drawingManager.setMap(map);
+
+  // Load current geofence from localStorage and apply it
+  const currentGeofenceData = localStorage.getItem('currentGeofence');
+  if (currentGeofenceData) {
+    const currentGeofence = JSON.parse(currentGeofenceData);
+    applyGeofence(currentGeofence);
+  }
+
+  // Event listener for when the user completes drawing a polygon
+  google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
+    if (window.polygon) {
+      window.polygon.setMap(null);
+    }
+    window.polygon = polygon;
+    drawingManager.setDrawingMode(null);
+
+    // Prompt the user for a name for the geofence
+    const geofenceName = prompt('Enter a name for this geofence:');
+    if (geofenceName) {
+      window.polygon.geofenceName = geofenceName;
+      // Get the city name and save the geofence
+      getCityNameAndSaveGeofence(polygon, geofenceName);
+    } else {
+      // If no name was entered, do not save the geofence
+      polygon.setMap(null);
+      window.polygon = null;
+      alert('Geofence not saved. Please provide a name.');
+    }
+
+    // Update saved geofence when edited
+    polygon.getPath().addListener('set_at', () => getCityNameAndSaveGeofence(polygon, geofenceName));
+    polygon.getPath().addListener('insert_at', () => getCityNameAndSaveGeofence(polygon, geofenceName));
+    polygon.getPath().addListener('remove_at', () => getCityNameAndSaveGeofence(polygon, geofenceName));
+  });
+
+  startSocketIO();
+
+  // Toggle instructions
+  document.getElementById('toggleInstructionsBtn').addEventListener('click', function() {
+    const instructionsDiv = document.getElementById('instructions');
+    if (instructionsDiv.style.display === 'none') {
+      instructionsDiv.style.display = 'block';
+      this.textContent = 'Hide Instructions';
+    } else {
+      instructionsDiv.style.display = 'none';
+      this.textContent = 'Show Instructions';
+    }
+  });
+
+  // Load saved geofences when the modal is opened
+  // Use jQuery to attach the event listener
+  $(document).ready(function() {
+    $('#savedGeofencesModal').on('show.bs.modal', function (event) {
+      loadSavedCustomGeofences();
+    });
+  });
+}
+
+function createGeofence() {
+  const address = document.getElementById('addressInput').value;
+  const geocoder = new google.maps.Geocoder();
+
+  geocoder.geocode({ address: address }, function (results, status) {
+    if (status === 'OK') {
+      const location = results[0].geometry.location;
+
+      // Center the map to the address
+      map.setCenter(location);
+      map.setZoom(15);
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+function getCityNameAndSaveGeofence(polygon, geofenceName) {
+  const path = polygon.getPath();
+  const coordinates = [];
+  for (let i = 0; i < path.getLength(); i++) {
+    coordinates.push({
+      lat: path.getAt(i).lat(),
+      lng: path.getAt(i).lng()
+    });
+  }
+
+  // Use the first coordinate for reverse geocoding
+  const firstCoordinate = coordinates[0];
+  const geocoder = new google.maps.Geocoder();
+  const latlng = new google.maps.LatLng(firstCoordinate.lat, firstCoordinate.lng);
+
+  geocoder.geocode({ location: latlng }, function(results, status) {
+    if (status === 'OK') {
+      let city = '';
+      if (results[0]) {
+        for (const component of results[0].address_components) {
+          if (component.types.includes('locality')) {
+            city = component.long_name;
+            break;
+          }
+        }
+      }
+      saveCustomGeofence(geofenceName, coordinates, city);
+    } else {
+      console.error('Geocoder failed due to: ' + status);
+      saveCustomGeofence(geofenceName, coordinates, 'Unknown City');
+    }
+  });
+}
+
+// Helper function to set current geofence
+function setCurrentGeofence(geofence) {
+  localStorage.setItem('currentGeofence', JSON.stringify(geofence));
+}
+
+function saveCustomGeofence(geofenceName, coordinates, city) {
+  let savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
+
+  // Check if a geofence with the same name exists
+  const existingIndex = savedGeofences.findIndex(g => g.name === geofenceName);
+  if (existingIndex !== -1) {
+    // Update existing geofence
+    savedGeofences[existingIndex].coordinates = coordinates;
+    savedGeofences[existingIndex].city = city;
+  } else {
+    // Add new geofence
+    savedGeofences.push({ name: geofenceName, coordinates: coordinates, city: city });
+  }
+
+  localStorage.setItem('savedGeofences', JSON.stringify(savedGeofences));
+
+  // Set as current geofence
+  setCurrentGeofence({ name: geofenceName, coordinates: coordinates, city: city });
+
+  // Refresh the saved geofences list
+  loadSavedCustomGeofences();
+}
+
+function loadSavedCustomGeofences() {
+  const savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
+  const savedGeofencesList = document.getElementById('savedGeofencesList');
+  savedGeofencesList.innerHTML = '';
+
+  if (savedGeofences.length === 0) {
+    savedGeofencesList.innerHTML = '<p class="text-muted">No saved geofences.</p>';
+    return;
+  }
+
+  savedGeofences.forEach((geofence) => {
+    const geofenceItem = document.createElement('div');
+    geofenceItem.className = 'd-flex justify-content-between align-items-center mb-2';
+
+    const geofenceInfo = document.createElement('div');
+
+    const geofenceName = document.createElement('strong');
+    geofenceName.textContent = geofence.name;
+
+    const geofenceCity = document.createElement('span');
+    geofenceCity.textContent = ` - ${geofence.city}`;
+
+    geofenceInfo.appendChild(geofenceName);
+    geofenceInfo.appendChild(geofenceCity);
+
+    const buttonGroup = document.createElement('div');
+
+    const applyButton = document.createElement('button');
+    applyButton.textContent = 'Apply';
+    applyButton.className = 'btn btn-sm btn-primary mr-2';
+    applyButton.onclick = () => applyGeofence(geofence);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'btn btn-sm btn-danger';
+    deleteButton.onclick = () => deleteGeofence(geofence.name);
+
+    buttonGroup.appendChild(applyButton);
+    buttonGroup.appendChild(deleteButton);
+
+    geofenceItem.appendChild(geofenceInfo);
+    geofenceItem.appendChild(buttonGroup);
+
+    savedGeofencesList.appendChild(geofenceItem);
+  });
+}
+
+function applyGeofence(geofence) {
+  if (window.polygon) {
+    window.polygon.setMap(null);
+  }
+  const coordinates = geofence.coordinates;
+  window.polygon = new google.maps.Polygon({
+    paths: coordinates,
+    strokeColor: '#3CB043',
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: '#74B72E',
+    fillOpacity: 0.35,
+    editable: true,
+    draggable: false
+  });
+  window.polygon.setMap(map);
+  window.polygon.geofenceName = geofence.name;
+
+  // Fit the map to the polygon bounds
+  const bounds = new google.maps.LatLngBounds();
+  coordinates.forEach(coord => bounds.extend(coord));
+  map.fitBounds(bounds);
+
+  // Update saved geofence when edited
+  window.polygon.getPath().addListener('set_at', () => getCityNameAndSaveGeofence(window.polygon, geofence.name));
+  window.polygon.getPath().addListener('insert_at', () => getCityNameAndSaveGeofence(window.polygon, geofence.name));
+  window.polygon.getPath().addListener('remove_at', () => getCityNameAndSaveGeofence(window.polygon, geofence.name));
+
+  // Set as current geofence
+  setCurrentGeofence(geofence);
+}
+
+function deleteGeofence(geofenceName) {
+  let savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
+  savedGeofences = savedGeofences.filter(g => g.name !== geofenceName);
+  localStorage.setItem('savedGeofences', JSON.stringify(savedGeofences));
+
+  // If the currently displayed geofence was deleted, remove it from the map and localStorage
+  if (window.polygon && window.polygon.geofenceName === geofenceName) {
+    window.polygon.setMap(null);
+    window.polygon = null;
+    localStorage.removeItem('currentGeofence');
+  }
+
+  loadSavedCustomGeofences();
+}
+
+function startSocketIO() {
+  const socket = io(); // Connect to the Socket.IO server
+
+  socket.on('new-coordinate', (data) => {
+    updateLocation(data);
+  });
+}
+
+function updateLocation(data) {
+  if (data && data.latitude && data.longitude) {
+    const gpsLocation = { lat: data.latitude, lng: data.longitude };
+
+    // If it's the first update, place the marker without animation
+    if (!trackingMarker) {
+      trackingMarker = new google.maps.Marker({
+        position: gpsLocation,
+        map: map,
+        title: 'GPS Module Location',
+        icon: {
+          url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', // Customize the marker icon
+        },
+      });
+    } else {
+      // Smoothly animate the marker to the new position
+      animateMarker(trackingMarker, gpsLocation);
+    }
+
+    // Check if the location is inside the geofence
+    let insideGeofence = false;
+
+    if (window.polygon) {
+      // Check if inside custom polygon geofence
+      insideGeofence = google.maps.geometry.poly.containsLocation(
+        new google.maps.LatLng(gpsLocation.lat, gpsLocation.lng),
+        window.polygon
+      );
+    }
+
+    // Check for exit or entry
+    if (
+      previousInsideGeofence !== null &&
+      previousInsideGeofence !== insideGeofence
+    ) {
+      if (!insideGeofence) {
+        alert('GPS Module has exited the geofence!');
+        sendMail('exited');
+      } else {
+        alert('GPS Module is inside the geofence!');
+        sendMail('entered');
+      }
+    }
+
+    previousInsideGeofence = insideGeofence;
+  } else {
+    console.error('Invalid data received:', data);
+  }
+}
+
+function animateMarker(marker, newPosition) {
+  if (animationInterval) {
+    clearInterval(animationInterval);
+  }
+
+  const startPosition = marker.getPosition();
+  const startTime = performance.now();
+
+  animationInterval = setInterval(() => {
+    const elapsed = performance.now() - startTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
+
+    const lat = startPosition.lat() + (newPosition.lat - startPosition.lat()) * progress;
+    const lng = startPosition.lng() + (newPosition.lng - startPosition.lng()) * progress;
+
+    marker.setPosition(new google.maps.LatLng(lat, lng));
+
+    if (progress === 1) {
+      clearInterval(animationInterval);
+    }
+  }, 16); // Approximately 60 frames per second
+}
+
+// Function to send an email using EmailJS
+function sendMail(status) {
+  var serviceID = "YOUR_EMAILJS_SERVICE_ID"; // Replace with your EmailJS service ID
+  var templateID = "YOUR_EMAILJS_TEMPLATE_ID"; // Replace with your EmailJS template ID
+
+  var templateParams = {
+    status: status, // 'exited' or 'entered'
+    // Add other template parameters as needed
+  };
+
+  emailjs.send(serviceID, templateID, templateParams)
+    .then(res => {
+      console.log("Email sent successfully");
+    })
+    .catch(err => {
+      console.error("Error sending email:", err);
+    });
+}
+
+</script>
+
+<!-- Include Google Maps API with geometry and drawing libraries -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places,geometry,drawing&callback=initMap" async defer></script>
+</body>
+</html>
