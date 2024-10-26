@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'website')));
 app.use(bodyParser.json());
 
 // MongoDB connection URI
-const uri = 'mongodb+srv://darrenelijah19:Barcel0na1@coordcluster.pa9fg.mongodb.net/'; // Replace with your actual URI
+const uri = 'mongodb+srv://darrenelijah19:Barcel0na1@coordcluster.pa9fg.mongodb.net/'; // URI to access mongodb
 
 // MongoDB client
 const client = new MongoClient(uri);
