@@ -60,7 +60,7 @@ async function insertRandomCoordinates() {
       } catch (insertError) {
         console.error("Failed to insert data:", insertError);
       }
-    }, 500); // Runs every 500 milliseconds (0.5 seconds) : 1000 millisecond = 1 sec
+    }, 100); // Runs every x milliseconds: 1000 millisecond = 1 sec
 
     process.on('SIGINT', async () => {
       clearInterval(intervalId);

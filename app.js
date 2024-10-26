@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const path = require('path');
 const { MongoClient } = require('mongodb');
@@ -41,11 +39,11 @@ app.get('/', (req, res) => {
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  //console.log('New client connected');
 
   // Clean up when the client disconnects
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    //console.log('Client disconnected');
   });
 });
 

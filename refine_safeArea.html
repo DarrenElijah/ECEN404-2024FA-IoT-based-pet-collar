@@ -14,8 +14,10 @@
 
   <style>
     /* Existing styles */
-    #mapSunday, #mapMonday, #mapTuesday, #mapWednesday, #mapThursday, #mapFriday, #mapSaturday, #mapArea {
-      height: 400px;
+
+    /* New dynamic map styles */
+    .map {
+      height: 80vh; /* Adjust this value to control the map's height */
       width: 100%;
     }
 
@@ -116,97 +118,85 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
 
 <script>
-  // Initialize variables
-  var maps = {};
-  var polygons = {};
-  var markers = {};
-  var dataByDay = {};
-  var boundsByDay = {}; // New: Store bounds for each day
+// Initialize variables
+var maps = {};
+var polygons = {};
+var markers = {};
+var dataByDay = {};
+var hullPointsByDay = {}; // New: Store hull points for each day
+var boundsByDay = {}; // Store bounds for each day
 
-  // Initialize days of the week
-  var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
+// Initialize days of the week
+var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
 
-  // Function to fetch data from the server and update maps
-  function fetchDataAndUpdateMaps() {
-    fetch('/api/data')  // Assume you have an API endpoint to fetch data
-      .then(response => response.json())
-      .then(data => {
-        processData(data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  }
-
-  // Process data received from the server
-  function processData(data) {
-    // Group data by day of the week
-    dataByDay = {};
-    data.forEach(point => {
-      var date = new Date(point.timestamp);
-      var dayIndex = date.getDay();
-      var day = daysOfWeek[dayIndex];
-
-      if (!dataByDay[day]) {
-        dataByDay[day] = [];
-      }
-
-      dataByDay[day].push({
-        lat: point.latitude,
-        lng: point.longitude,
-        timestamp: point.timestamp,
-      });
-
-      // Collect all points for refined area
-      if (!dataByDay['RefinedArea']) {
-        dataByDay['RefinedArea'] = [];
-      }
-      dataByDay['RefinedArea'].push({
-        lat: point.latitude,
-        lng: point.longitude,
-        timestamp: point.timestamp,
-      });
+// Function to fetch data from the server and update maps
+function fetchDataAndUpdateMaps() {
+  fetch('/api/data')  // Assume you have an API endpoint to fetch data
+    .then(response => response.json())
+    .then(data => {
+      processData(data);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
     });
+}
 
-    // Update the maps
-    updateMaps();
-  }
+// Process data received from the server
+function processData(data) {
+  // Group data by day of the week
+  dataByDay = {};
+  hullPointsByDay = {}; // Reset hull points by day
 
-  // Update the maps with new data
-  function updateMaps() {
-    daysOfWeek.forEach(function(day) {
-      if (maps[day]) {
-        // Clear existing markers and polygons
-        if (markers[day]) {
-          markers[day].forEach(function(marker) {
-            marker.setMap(null);
-          });
-        }
-        if (polygons[day]) {
-          polygons[day].setMap(null);
-        }
+  data.forEach(point => {
+    var date = new Date(point.timestamp);
+    var dayIndex = date.getDay();
+    var day = daysOfWeek[dayIndex];
 
-        // Add new markers
-        markers[day] = [];
+    if (!dataByDay[day]) {
+      dataByDay[day] = [];
+    }
+
+    dataByDay[day].push({
+      lat: point.latitude,
+      lng: point.longitude,
+      timestamp: point.timestamp,
+    });
+  });
+
+  // For each day, compute the convex hull and store hull points
+  daysOfWeek.slice(0, 7).forEach(day => { // Exclude 'RefinedArea'
+    if (dataByDay[day]) {
+      var hullPoints = computeConvexHull(dataByDay[day]);
+      hullPointsByDay[day] = hullPoints;
+    }
+  });
+
+  // Update the maps
+  updateMaps();
+}
+
+// Update the maps with new data
+function updateMaps() {
+  daysOfWeek.forEach(function(day) {
+    if (maps[day]) {
+      // Clear existing markers and polygons
+      if (markers[day]) {
+        markers[day].forEach(function(marker) {
+          marker.setMap(null);
+        });
+      }
+      if (polygons[day]) {
+        polygons[day].setMap(null);
+      }
+
+      // Initialize markers array
+      markers[day] = [];
+
+      if (day !== 'RefinedArea') {
+        // For individual days
         if (dataByDay[day]) {
-          dataByDay[day].forEach(function(coord) {
-            var marker = new google.maps.Marker({
-              position: { lat: coord.lat, lng: coord.lng },
-              map: maps[day],
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 2, // Adjust the size of the dot
-                fillColor: '#000000', // Dot color
-                fillOpacity: 0.5,
-                strokeWeight: 0, // Remove border
-              },
-            });
-            markers[day].push(marker);
-          });
-
-          // Create geofence using Convex Hull
-          var hullPoints = computeConvexHull(dataByDay[day]);
-          if (hullPoints.length >= 3) {
+          var hullPoints = hullPointsByDay[day];
+          if (hullPoints && hullPoints.length >= 3) {
             var polygon = new google.maps.Polygon({
               paths: hullPoints,
               strokeColor: '#3CB043',
@@ -217,6 +207,23 @@
               map: maps[day],
             });
             polygons[day] = polygon;
+
+            // Place markers at the vertices of the polygon
+            hullPoints.forEach(function(point) {
+              var marker = new google.maps.Marker({
+                position: { lat: point.lat, lng: point.lng },
+                map: maps[day],
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 3.5, // Adjust the size of the marker
+                  fillColor: '#888a89', // Marker color
+                  fillOpacity: 1,
+                  strokeWeight: 1,
+                  strokeColor: '#FFFFFF',
+                },
+              });
+              markers[day].push(marker);
+            });
 
             // Auto-zoom to fit the geofence
             var bounds = new google.maps.LatLngBounds();
@@ -230,138 +237,212 @@
             // Store bounds
             boundsByDay[day] = bounds;
           } else {
-            // If less than 3 points, adjust the map to fit all markers
+            // Handle cases with less than 3 points
+            // Place markers at individual points
+            dataByDay[day].forEach(function(coord) {
+              var marker = new google.maps.Marker({
+                position: { lat: coord.lat, lng: coord.lng },
+                map: maps[day],
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 3.5,
+                  fillColor: '#888a89',
+                  fillOpacity: 1,
+                  strokeWeight: 1,
+                  strokeColor: '#FFFFFF',
+                },
+              });
+              markers[day].push(marker);
+            });
+
+            // Adjust the map to fit all markers
             var bounds = new google.maps.LatLngBounds();
             markers[day].forEach(function(marker) {
               bounds.extend(marker.getPosition());
             });
-            // Only fit bounds if the map is visible
             if ($('#' + day).hasClass('active')) {
               maps[day].fitBounds(bounds);
             }
-            // Store bounds
             boundsByDay[day] = bounds;
           }
         }
+      } else {
+        // For RefinedArea tab
+        // Combine hull points from all days
+        var combinedHullPoints = [];
+        var pointSet = new Set();
+        Object.values(hullPointsByDay).forEach(function(hullPoints) {
+          hullPoints.forEach(function(point) {
+            var key = point.lat + ',' + point.lng;
+            if (!pointSet.has(key)) {
+              pointSet.add(key);
+              combinedHullPoints.push(point);
+            }
+          });
+        });
+
+        // Compute the convex hull of combined hull points
+        var refinedHullPoints = computeConvexHull(combinedHullPoints);
+        if (refinedHullPoints && refinedHullPoints.length >= 3) {
+          var polygon = new google.maps.Polygon({
+            paths: refinedHullPoints,
+            strokeColor: '#3CB043', // Different color for refined area
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#74B72E',
+            fillOpacity: 0.35,
+            map: maps[day],
+          });
+          polygons[day] = polygon;
+
+          // Place markers at the vertices of the refined polygon
+          refinedHullPoints.forEach(function(point) {
+            var marker = new google.maps.Marker({
+              position: { lat: point.lat, lng: point.lng },
+              map: maps[day],
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 3.5,
+                fillColor: '#888a89',
+                fillOpacity: 1,
+                strokeWeight: 1,
+                strokeColor: '#FFFFFF',
+              },
+            });
+            markers[day].push(marker);
+          });
+
+          // Auto-zoom to fit the refined geofence
+          var bounds = new google.maps.LatLngBounds();
+          refinedHullPoints.forEach(function(point) {
+            bounds.extend(new google.maps.LatLng(point.lat, point.lng));
+          });
+          if ($('#' + day).hasClass('active')) {
+            maps[day].fitBounds(bounds);
+          }
+          boundsByDay[day] = bounds;
+        } else {
+          // Handle cases with less than 3 points
+          // Similar to previous code
+        }
       }
-    });
-  }
-
-  // Convex Hull algorithm (Graham Scan)
-  function computeConvexHull(points) {
-    if (points.length <= 1) return points;
-
-    // Sort points by x-coordinate (lng), then by y-coordinate (lat)
-    points.sort(function(a, b) {
-      return a.lng - b.lng || a.lat - b.lat;
-    });
-
-    var lower = [];
-    for (var i = 0; i < points.length; i++) {
-      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
-        lower.pop();
-      }
-      lower.push(points[i]);
     }
+  });
+}
 
-    var upper = [];
-    for (var i = points.length - 1; i >= 0; i--) {
-      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], points[i]) <= 0) {
-        upper.pop();
-      }
-      upper.push(points[i]);
+// Convex Hull algorithm (Graham Scan)
+function computeConvexHull(points) {
+  if (points.length <= 1) return points;
+
+  // Sort points by x-coordinate (lng), then by y-coordinate (lat)
+  points.sort(function(a, b) {
+    return a.lng - b.lng || a.lat - b.lat;
+  });
+
+  var lower = [];
+  for (var i = 0; i < points.length; i++) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
+      lower.pop();
     }
-
-    // Remove the last point of each list (it's the starting point of the other list)
-    lower.pop();
-    upper.pop();
-
-    // Concatenate the lower and upper parts to get the full hull
-    return lower.concat(upper);
+    lower.push(points[i]);
   }
 
-  // Cross product of OA and OB vectors
-  function cross(o, a, b) {
-    return (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
+  var upper = [];
+  for (var i = points.length - 1; i >= 0; i--) {
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], points[i]) <= 0) {
+      upper.pop();
+    }
+    upper.push(points[i]);
   }
 
-  // Initialize the maps and tabs
-  function initMaps() {
-    var tabsContainer = document.getElementById('dayTabs');
-    var tabsContent = document.getElementById('dayTabsContent');
+  // Remove the last point of each list (it's the starting point of the other list)
+  lower.pop();
+  upper.pop();
 
-    daysOfWeek.forEach(function(day, index) {
-      // Create tab
-      var tab = document.createElement('li');
-      tab.classList.add('nav-item');
-      var tabLink = document.createElement('a');
-      tabLink.classList.add('nav-link');
-      if (index === 0) tabLink.classList.add('active');
-      tabLink.id = day + '-tab';
-      tabLink.dataset.toggle = 'tab';
-      tabLink.href = '#' + day;
-      tabLink.role = 'tab';
-      tabLink.setAttribute('aria-controls', day);
-      tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-      tabLink.innerText = day === 'RefinedArea' ? 'Refined Safe Area' : day;
-      tab.appendChild(tabLink);
-      tabsContainer.appendChild(tab);
+  // Concatenate the lower and upper parts to get the full hull
+  return lower.concat(upper);
+}
 
-      // Create tab content
-      var tabPane = document.createElement('div');
-      tabPane.classList.add('tab-pane', 'fade');
-      if (index === 0) tabPane.classList.add('show', 'active');
-      tabPane.id = day;
-      tabPane.role = 'tabpanel';
-      tabPane.setAttribute('aria-labelledby', day + '-tab');
+// Cross product of OA and OB vectors
+function cross(o, a, b) {
+  return (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
+}
 
-      // Add heading to tab content
-      var heading = document.createElement('h3');
-      heading.innerText = day === 'RefinedArea' ? 'Refined Safe Area for the Week' : day;
-      tabPane.appendChild(heading);
+// Initialize the maps and tabs
+function initMaps() {
+  var tabsContainer = document.getElementById('dayTabs');
+  var tabsContent = document.getElementById('dayTabsContent');
 
-      var mapDiv = document.createElement('div');
-      mapDiv.id = 'map' + day;
-      mapDiv.style.height = '400px';
-      mapDiv.style.width = '100%';
-      tabPane.appendChild(mapDiv);
-      tabsContent.appendChild(tabPane);
+  daysOfWeek.forEach(function(day, index) {
+    // Create tab
+    var tab = document.createElement('li');
+    tab.classList.add('nav-item');
+    var tabLink = document.createElement('a');
+    tabLink.classList.add('nav-link');
+    if (index === 0) tabLink.classList.add('active');
+    tabLink.id = day + '-tab';
+    tabLink.dataset.toggle = 'tab';
+    tabLink.href = '#' + day;
+    tabLink.role = 'tab';
+    tabLink.setAttribute('aria-controls', day);
+    tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+    tabLink.innerText = day === 'RefinedArea' ? 'Refined Safe Area' : day;
+    tab.appendChild(tabLink);
+    tabsContainer.appendChild(tab);
 
-      // Initialize map
-      maps[day] = new google.maps.Map(mapDiv, {
-        center: { lat: 30.616249, lng: -96.336853 },
-        zoom: 15,
-      });
+    // Create tab content
+    var tabPane = document.createElement('div');
+    tabPane.classList.add('tab-pane', 'fade');
+    if (index === 0) tabPane.classList.add('show', 'active');
+    tabPane.id = day;
+    tabPane.role = 'tabpanel';
+    tabPane.setAttribute('aria-labelledby', day + '-tab');
 
-      // Initialize markers and polygons
-      markers[day] = [];
-      polygons[day] = null;
+    // Add heading to tab content
+    var heading = document.createElement('h3');
+    heading.innerText = day === 'RefinedArea' ? 'Refined Safe Area for the Week' : day;
+    tabPane.appendChild(heading);
+
+    var mapDiv = document.createElement('div');
+    mapDiv.id = 'map' + day;
+    mapDiv.classList.add('map');
+    tabPane.appendChild(mapDiv);
+    tabsContent.appendChild(tabPane);
+
+    // Initialize map
+    maps[day] = new google.maps.Map(mapDiv, {
+      center: { lat: 30.616249, lng: -96.336853 },
+      zoom: 15,
     });
 
-    // Fetch data and update maps
-    fetchDataAndUpdateMaps();
+    // Initialize markers and polygons
+    markers[day] = [];
+    polygons[day] = null;
+  });
 
-    // Set an interval to fetch data periodically
-    setInterval(fetchDataAndUpdateMaps, 5000); //updates; 1 sec = 1000
+  // Fetch data and update maps
+  fetchDataAndUpdateMaps();
 
-    // Event listener for tab shown
-    $('#dayTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      var dayText = $(e.target).text();
-      var day = dayText === 'Refined Safe Area' ? 'RefinedArea' : dayText;
-      var map = maps[day];
-      var bounds = boundsByDay[day];
-      if (map && bounds) {
-        google.maps.event.trigger(map, 'resize');
-        map.fitBounds(bounds);
-      }
-    });
-  }
+  // Set an interval to fetch data periodically
+  setInterval(fetchDataAndUpdateMaps, 2000); // Runs every x milliseconds: 1000 millisecond = 1 sec
 
-  // Initialize maps after the page has loaded
-  window.onload = initMaps;
+  // Event listener for tab shown
+  $('#dayTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var dayText = $(e.target).text();
+    var day = dayText === 'Refined Safe Area' ? 'RefinedArea' : dayText;
+    var map = maps[day];
+    var bounds = boundsByDay[day];
+    if (map && bounds) {
+      google.maps.event.trigger(map, 'resize');
+      map.fitBounds(bounds);
+    }
+  });
+}
+
+// Initialize maps after the page has loaded
+window.onload = initMaps;
 
 </script>
 
 </body>
 </html>
-
