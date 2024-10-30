@@ -1,10 +1,7 @@
 const { MongoClient } = require('mongodb');
 
-const uri = "mongodb+srv://darrenelijah19:Barcel0na1@coordcluster.pa9fg.mongodb.net/";
-const client = new MongoClient(uri, {
-  tls: true, // Enable TLS connection
-  tlsAllowInvalidCertificates: true, // Allow invalid certificates (use with caution)
-});
+const uri = "mongodb://localhost:27017";
+const client = new MongoClient(uri, { useUnifiedTopology: true, tls: false });
 
 function getRandomTimestamp() {
   // Generate a random date within the past 30 days
@@ -19,8 +16,8 @@ function getRandomTimestamp() {
 async function insertRandomCoordinates() {
   try {
     await client.connect();
-    const database = client.db("ECEN404"); // Database name
-    const collection = database.collection("CoordsGPS"); // Collection name
+    const database = client.db("coordinates_db"); // Database name
+    const collection = database.collection("coordinates_collection"); // Collection name
 
     console.log("Connected to MongoDB");
 
@@ -60,7 +57,7 @@ async function insertRandomCoordinates() {
       } catch (insertError) {
         console.error("Failed to insert data:", insertError);
       }
-    }, 100); // Runs every x milliseconds: 1000 millisecond = 1 sec
+    }, 500); // Runs every x milliseconds: 1000 millisecond = 1 sec
 
     process.on('SIGINT', async () => {
       clearInterval(intervalId);
