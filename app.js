@@ -4,6 +4,7 @@ const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const http = require('http');
 const socketIo = require('socket.io');
+const { spawn } = require('child_process');
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +12,10 @@ const io = socketIo(server);
 
 // Serve static files from the 'website' directory
 app.use(express.static(path.join(__dirname, 'website')));
+
+// New static middleware for HLS
+app.use('/hls', express.static('/tmp/hls'));
+
 
 // Parse JSON bodies (as sent by API clients)
 app.use(bodyParser.json());
@@ -130,6 +135,27 @@ app.post('/api/insert', async (req, res) => {
     console.error('Error inserting data:', error);
     res.status(500).send('Error inserting data');
   }
+});
+
+// FFmpeg command and arguments
+const ffmpegArgs = [
+  '-i', 'rtsp://10.0.0.7:8000/',
+  '-c:v', 'copy',
+  '-f', 'hls',
+  '-hls_time', '2',
+  '-hls_list_size', '5',
+  '-hls_flags', 'delete_segments',
+  '/tmp/hls/stream.m3u8'
+];
+
+const ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
+
+ffmpegProcess.stderr.on('data', (data) => {
+  console.error(`FFmpeg stderr: ${data}`);
+});
+
+ffmpegProcess.on('close', (code) => {
+  console.log(`FFmpeg process exited with code ${code}`);
 });
 
 // Start the server and connect to MongoDB
