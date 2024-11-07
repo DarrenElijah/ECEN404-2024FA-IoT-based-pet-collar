@@ -34,9 +34,19 @@
       background-color: #008080;
       color: white;
     }
+    .nav-tabs .nav-link.disabled {
+      color: #6c757d !important; /* Light grey */
+      pointer-events: none; /* Prevent clicking */
+      background-color: #f1f1f1; /* Optional: Light background for visual effect */
+    }
 
     .tab-content > .tab-pane {
       margin-top: 20px;
+    }
+
+    .container-fluid {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
 
     /* Add any additional custom styles here */
@@ -79,19 +89,19 @@
 </nav>
 
 <!-- Main content -->
-<div class="container-fluid main-content">
+<div class="container-fluid main-content px-0">
   <div class="row">
     <div class="col-md-6 offset-md-3 text-center">
       <h1 class="display-4">Refine Safe Area</h1>
-      <p class="lead">This is the machine learning page, ML is used to refine the safe area to better fit pets' movements</p>
+      <p class="text-muted">Use this page to view and refine geofences based on your pet’s movements throughout the week. The system analyzes location data per day, showing individual safe areas and a combined, refined area for the entire week. This helps create a more accurate safe zone for your pet.</p>
     </div>
   </div>
 </div>
 
 <!-- Tabs for days of the week -->
-<div class="container mt-4">
+<div class="container-fluid mt-4 px-0">
   <!-- Nav tabs -->
-  <ul class="nav nav-tabs" id="dayTabs" role="tablist">
+  <ul class="nav nav-tabs justify-content-center" id="dayTabs" role="tablist"> <!-- Add justify-content-center here -->
     <!-- Tabs will be generated dynamically -->
   </ul>
   <!-- Tab panes -->
@@ -165,15 +175,22 @@ function processData(data) {
 
   // For each day, compute the convex hull and store hull points
   daysOfWeek.slice(0, 7).forEach(day => { // Exclude 'RefinedArea'
-    if (dataByDay[day]) {
+    const tabLink = document.getElementById(day + '-tab');
+    if (dataByDay[day] && dataByDay[day].length > 0) {
+      // Enable tab if data exists
+      tabLink.classList.remove('disabled');
       var hullPoints = computeConvexHull(dataByDay[day]);
       hullPointsByDay[day] = hullPoints;
+    } else {
+      // Disable tab if no data
+      tabLink.classList.add('disabled');
     }
   });
 
   // Update the maps
   updateMaps();
 }
+
 
 // Update the maps with new data
 function updateMaps() {
