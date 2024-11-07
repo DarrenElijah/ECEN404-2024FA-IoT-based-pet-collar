@@ -21,8 +21,7 @@ app.use('/hls', express.static('/tmp/hls'));
 app.use(bodyParser.json());
 
 // MongoDB connection URI
-const uri = 'mongodb+srv://darrenelijah19:Barcel0na1@coordcluster.pa9fg.mongodb.net/'; // URI to access mongodb
-
+const uri = 'mongodb://localhost:27017'
 // MongoDB client
 const client = new MongoClient(uri);
 
@@ -55,8 +54,8 @@ io.on('connection', (socket) => {
 // Function to watch the MongoDB collection for changes
 async function watchCollection() {
   try {
-    const database = client.db('ECEN404');
-    const collection = database.collection('CoordsGPS');
+    const database = client.db('coordinates_db');
+    const collection = database.collection('coordinates_collection');
 
     // Set up a change stream to listen for new documents
     const changeStream = collection.watch();
@@ -85,8 +84,8 @@ async function watchCollection() {
 // API endpoint to fetch all data
 app.get('/api/data', async (req, res) => {
   try {
-    const database = client.db('ECEN404');
-    const collection = database.collection('CoordsGPS');
+    const database = client.db('coordinates_db');
+    const collection = database.collection('coordinates_collection');
 
     // Fetch all data
     const data = await collection.find({}).toArray();
@@ -100,8 +99,8 @@ app.get('/api/data', async (req, res) => {
 // API endpoint to fetch the latest coordinate
 app.get('/api/latest-coordinate', async (req, res) => {
   try {
-    const database = client.db('ECEN404');
-    const collection = database.collection('CoordsGPS');
+    const database = client.db('coordinates_db');
+    const collection = database.collection('coordinates_collection');
 
     // Find the latest coordinate based on timestamp
     const latestCoordinate = await collection.findOne({}, { sort: { timestamp: -1 } });
@@ -126,8 +125,8 @@ app.post('/api/insert', async (req, res) => {
   try {
     const newCoordinate = req.body;
 
-    const database = client.db('ECEN404');
-    const collection = database.collection('CoordsGPS');
+    const database = client.db('coordinates_db');
+    const collection = database.collection('coordinates_collection');
 
     await collection.insertOne(newCoordinate);
     res.json({ message: 'Data inserted' });
@@ -136,6 +135,13 @@ app.post('/api/insert', async (req, res) => {
     res.status(500).send('Error inserting data');
   }
 });
+
+const fs = require('fs');
+
+// Ensure that the directory '/tmp/hls' exists
+if (!fs.existsSync('/tmp/hls')) {
+  fs.mkdirSync('/tmp/hls', { recursive: true });
+}
 
 // FFmpeg command and arguments
 const ffmpegArgs = [
@@ -147,6 +153,7 @@ const ffmpegArgs = [
   '-hls_flags', 'delete_segments',
   '/tmp/hls/stream.m3u8'
 ];
+
 
 const ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
 
