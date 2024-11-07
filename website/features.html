@@ -4,15 +4,21 @@
   <title>Pet Tracker WatchDog - Feature Activation</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <script src="script.js"></script>
-
-    <!-- hls.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> 
-
+  
+  <!-- HLS.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> 
 
   <style>
     h1 {
@@ -20,144 +26,153 @@
       font-size: 3rem; 
       font-weight: bold; 
       color: #008080; 
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    /* Styling for video element */
+    #videoElement {
+      margin-top: 20px;
+      border: 2px solid #007BFF;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
+    /* Center the video and buzzer */
+    .video-container, .buzzer-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #videoElement {
+        max-width: 100%;
+      }
     }
   </style>
 
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="tracking.html">Tracking</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Feature Activation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="about.html">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="contacts.html">Contact/Settings</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<!-- Main content -->
-<div class="container-fluid main-content">
-  <div class="row">
-    <div class="col-md-6 offset-md-3 text-center">
-      <h1 class="display-4 text-center">Activate Features</h1>
-      <p class="lead text-center">You will be able to activate or deactivate features here: Live video feed, and buzzer.</p>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tracking.html">Tracking</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Feature Activation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="refine_safeArea.html">Refine Safe Area</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="contacts.html">Contact/Settings</a>
+        </li>
+      </ul>
     </div>
-  </div>
-</div>
+  </nav>
 
-
-<div class="text-center">
-  <div class="container">
+  <!-- Main Content -->
+  <div class="container-fluid main-content">
     <div class="row">
-      <div class="col-md-6">
-        <button id="toggleButton" onclick="toggleCamera()" class="btn btn-primary btn-lg btn-block">Video Feed</button>
-        <video id="videoElement" controls autoplay muted playsinline width="100%" height="auto"></video>
-      </div>
-      <div class="col-md-6">
-        <button id="buzzerButton" class="btn btn-primary btn-lg btn-block">Buzzer</button>
+      <div class="col-md-8 offset-md-2 text-center">
+        <h1 class="display-4">Activate Features</h1>
+        <p class="lead">You can activate or deactivate features here: Live video feed and buzzer.</p>
       </div>
     </div>
   </div>
-</div>
 
-
-<!-- Added audio element -->
-<div class="w3-container w3-center mt-4">
-  <audio id="sound" src="buzzer.mp3" loop></audio>
-</div>
-
-<!-- Footer -->
-<footer class="footer mt-auto py-3 bg-dark text-white">
-  <div class="container text-center">
-    <span class="text-muted">Made By Team 34</span>
+  <!-- Video Stream Section -->
+  <div class="video-container">
+    <video id="videoElement" controls autoplay muted playsinline></video>
   </div>
-</footer>
 
-<!-- Scripts -->
-<script>
+  <!-- Buzzer Button -->
+  <div class="buzzer-container">
+    <button id="buzzerButton" class="btn btn-primary btn-lg">Buzzer</button>
+  </div>
 
-  // Function to toggle the camera feed on/off
-  let hls;
-  function toggleCamera() {
+  <!-- Audio Element for Buzzer -->
+  <div class="w3-container w3-center mt-4">
+    <audio id="sound" src="buzzer.mp3" loop></audio>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <span class="text-muted">Made By Team 34</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Automatically start the video stream when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
       const videoElement = document.getElementById('videoElement');
-      const toggleButton = document.getElementById('toggleButton');
+      const streamURL = '/hls/stream.m3u8'; // Ensure this path matches your server's HLS output
 
-      if (videoElement.src) {
-          // Stop the stream
-          if (hls) {
-              hls.destroy();
-              hls = null;
-          }
-          videoElement.src = '';
-          toggleButton.textContent = 'Video Feed';
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(streamURL);
+        hls.attachMedia(videoElement);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          videoElement.play();
+        });
+        hls.on(Hls.Events.ERROR, function (event, data) {
+          console.error('HLS.js error:', data);
+          alert('Error playing the video stream.');
+        });
+      } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+        // For Safari and native HLS support
+        videoElement.src = streamURL;
+        videoElement.addEventListener('loadedmetadata', function () {
+          videoElement.play();
+        });
       } else {
-          const streamURL = '/stream.m3u8'; // Ensure the correct path to the HLS playlist
-          if (Hls.isSupported()) {
-              hls = new Hls();
-              hls.loadSource(streamURL);
-              hls.attachMedia(videoElement);
-              hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                  videoElement.play();
-              });
-          } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-              // For Safari and native HLS support
-              videoElement.src = streamURL;
-              videoElement.addEventListener('loadedmetadata', function () {
-                  videoElement.play();
-              });
-          } else {
-              alert('Your browser does not support HLS playback.');
-          }
-          toggleButton.textContent = 'Stop Feed';
+        alert('Your browser does not support HLS playback.');
       }
-  }
-  
-  // Functionality for the sound button
-  const soundButton = document.getElementById('buzzerButton');
-  const sound = document.getElementById('sound');
-  
-  let isSoundPlaying = false;
-  
-  soundButton.addEventListener('click', function() {
-      // Toggle between playing and pausing the sound
-      if (isSoundPlaying) {
-          sound.pause();
-          document.getElementById('buzzerButton').innerText = 'Buzzer'; // Change button text back to original state
+    });
+
+    // Functionality for the buzzer button
+    const soundButton = document.getElementById('buzzerButton');
+    const sound = document.getElementById('sound');
+
+    soundButton.addEventListener('click', function() {
+      if (sound.paused) {
+        sound.play();
+        soundButton.textContent = 'Stop Buzzer';
+        soundButton.classList.remove('btn-primary');
+        soundButton.classList.add('btn-danger');
       } else {
-          sound.play();
-          document.getElementById('buzzerButton').innerText = 'Stop Buzzer'; // Change button text to indicate stopping sound
+        sound.pause();
+        sound.currentTime = 0;
+        soundButton.textContent = 'Buzzer';
+        soundButton.classList.remove('btn-danger');
+        soundButton.classList.add('btn-primary');
       }
-      isSoundPlaying = !isSoundPlaying;
-  });
-  
+    });
   </script>
-  
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
