@@ -4,460 +4,810 @@
   <title>Pet Tracker WatchDog - Refined Safe Area</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Include Bootstrap CSS and other necessary styles -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
   <!-- Custom styles -->
-  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-  <!-- Include Font Awesome for icons (if needed) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Include Turf.js for geospatial operations -->
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 
   <style>
-    /* Existing styles */
-
-    /* New dynamic map styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .navbar-brand {
+      font-weight: 700;
+    }
+    .nav-link.active {
+      color: #fff;
+    }
+    /* Heading Style */
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ff5722;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    }
+    /* Map Section */
     .map {
-      height: 80vh; /* Adjust this value to control the map's height */
+      height: 80vh;
       width: 100%;
     }
-
-    h1 {
-      font-family: 'Roboto', sans-serif;
-      font-size: 3rem;
-      font-weight: bold;
-      color: #008080;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    /* Customize Tabs */
+    .nav-tabs .nav-link.active {
+      background-color: #ff5722;
+      color: #fff;
     }
-
-    /* Custom styles for tabs */
-    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-      background-color: #008080;
-      color: white;
+    .nav-tabs .nav-link {
+      color: #ff5722;
     }
+    .nav-tabs .nav-link:hover {
+      color: #e64a19;
+    }
+    /* Disable tab link */
     .nav-tabs .nav-link.disabled {
-      color: #6c757d !important; /* Light grey */
-      pointer-events: none; /* Prevent clicking */
-      background-color: #f1f1f1; /* Optional: Light background for visual effect */
+      color: #6c757d;
+      pointer-events: none;
+      background-color: #f1f1f1;
+    }
+    /* Customize buttons */
+    .btn-primary {
+      background-color: #ff5722;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e64a19;
+    }
+    /* Footer */
+    footer {
+      background-color: #212529;
+      color: #fff;
+      padding: 2rem 0;
+    }
+    footer a {
+      color: #ff5722;
+    }
+    footer a:hover {
+      color: #e64a19;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .map {
+        height: 60vh;
+      }
+    }
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .dark-mode .navbar {
+      background-color: #1f1f1f;
+    }
+    .dark-mode .nav-link.active {
+      color: #ffa942;
+    }
+    .dark-mode .navbar-brand,
+    .dark-mode .nav-link {
+      color: #ffffff;
+    }
+    .dark-mode h1 {
+      color: #ff9800;
+    }
+    .dark-mode p {
+      color: #ffffff;
+    }
+    .dark-mode .text-muted {
+      color: #ffffff !important;
+    }
+    .dark-mode .nav-tabs .nav-link.active {
+      background-color: #ff9800;
+      color: #fff;
+    }
+    .dark-mode .nav-tabs .nav-link {
+      color: #ff9800;
+    }
+    .dark-mode .nav-tabs .nav-link:hover {
+      color: #ffb74d;
+    }
+    .dark-mode .nav-tabs .nav-link.disabled {
+      color: #6c757d !important;
+      background-color: #2f2f2f;
+    }
+    .dark-mode .btn-primary {
+      background-color: #ff9800;
+    }
+    .dark-mode .btn-primary:hover {
+      background-color: #ffb74d;
+    }
+    .dark-mode footer {
+      background-color: #1f1f1f;
+    }
+    .dark-mode footer a {
+      color: #ff9800;
+    }
+    .dark-mode footer a:hover {
+      color: #ffb74d;
+    }
+    /* Instructions Section */
+    #instructions {
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 20px;
     }
 
-    .tab-content > .tab-pane {
-      margin-top: 20px;
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
     }
 
-    .container-fluid {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
+    /* Dark Mode Instructions Styles */
+    body.dark-mode #instructions {
+      background-color: #1f1f1f;
+      border-radius: 5px;
+      padding: 20px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    /* Add any additional custom styles here */
+    body.dark-mode #instructions h5 {
+      color: #ff9800;
+      margin-bottom: 15px;
+    }
+
+    body.dark-mode #instructions ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    body.dark-mode #instructions li {
+      color: #dddddd;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    /* Optional: Add smooth transition for better UX */
+    #instructions,
+    body.dark-mode #instructions {
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    }
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">WatchDog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-  <!-- Navbar links -->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <!-- Update the links as per your website structure -->
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="tracking.html">Tracking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="features.html">Feature Activation</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Refine Safe Area</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="about.html">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="contacts.html">Contact/Settings</a>
-      </li>
-    </ul>
-  </div>
-</nav>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Update the links as per your website structure -->
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="tracking.html">Tracking</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="features.html">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Safe Area</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contacts.html">Contact/Settings</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 <!-- Main content -->
-<div class="container-fluid main-content px-0">
+<div class="container-fluid main-content mt-5 pt-5">
   <div class="row">
     <div class="col-md-6 offset-md-3 text-center">
       <h1 class="display-4">Refine Safe Area</h1>
-      <p class="text-muted">Use this page to view and refine geofences based on your pet’s movements throughout the week. The system analyzes location data per day, showing individual safe areas and a combined, refined area for the entire week. This helps create a more accurate safe zone for your pet.</p>
+      <p class="text-muted">
+        Use this page to view and refine geofences based on your pet’s movements throughout the week.
+        The system analyzes location data per day, showing individual safe areas and a combined,
+        refined area for the entire week. This helps create a more accurate safe zone for your pet.
+      </p>
+      
+      <!-- Show Instructions Button -->
+      <button class="btn btn-primary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse" id="toggleInstructionsBtn">
+        Show Instructions
+      </button>
+      
+      <!-- Instructions Content -->
+      <div class="collapse mt-3" id="instructionsCollapse">
+        <div class="card card-body" id="instructions">
+          <h5>Instructions:</h5>
+          <ul>
+            <li>Click on each day tab to view your pet’s safe area for that specific day.</li>
+            <li>If the tab is grayed out, the tab has yet to collect data for that day.</li>
+            <li>The Refined Safe Area combines all daily safe zones for a comprehensive view of the week.</li>
+            <li>To update your safe areas, ensure your pet's tracker is active and data is being collected.</li>
+            <li>Use the map controls to zoom in/out and navigate around the safe areas.</li>
+          </ul>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
 
-<!-- Tabs for days of the week -->
-<div class="container-fluid mt-4 px-0">
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs justify-content-center" id="dayTabs" role="tablist"> <!-- Add justify-content-center here -->
-    <!-- Tabs will be generated dynamically -->
-  </ul>
-  <!-- Tab panes -->
-  <div class="tab-content" id="dayTabsContent">
-    <!-- Tab content will be generated dynamically -->
+
+  <!-- Tabs for days of the week -->
+  <div class="container-fluid mt-4">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs justify-content-center" id="dayTabs" role="tablist">
+      <!-- Tabs will be generated dynamically -->
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content" id="dayTabsContent">
+      <!-- Tab content will be generated dynamically -->
+    </div>
   </div>
-</div>
 
-<!-- Footer -->
-<footer class="footer mt-auto py-3 bg-dark text-white">
-  <div class="container text-center">
-    <span class="text-muted">Made By Team 34</span>
-  </div>
-</footer>
+  <!-- Footer -->
+  <footer class="text-center mt-5">
+    <div class="container">
+      <p>© 2024 WatchDog. All rights reserved.</p>
+      <p>Made by <a href="#">Team 34</a></p>
+      <div>
+        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
 
-<!-- Scripts -->
-<!-- Include jQuery and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<!-- Include Popper.js and Bootstrap JS (for Bootstrap features) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Scripts -->
+  <!-- Bootstrap 5 JS Bundle (includes Popper.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Include Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
+  <!-- Include Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
 
-<script>
-// Initialize variables
-var maps = {};
-var polygons = {};
-var markers = {};
-var dataByDay = {};
-var hullPointsByDay = {}; // New: Store hull points for each day
-var boundsByDay = {}; // Store bounds for each day
+  <!-- Your JavaScript code -->
+  <script>
+    // Initialize variables
+    var maps = {};
+    var polygons = {};
+    var markers = {};
+    var dataByDay = {};
+    var hullPointsByDay = {};
+    var boundsByDay = {};
 
-// Initialize days of the week
-var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
+    // Initialize days of the week
+    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+                      'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
 
-// Function to fetch data from the server and update maps
-function fetchDataAndUpdateMaps() {
-  fetch('/api/data')  // Assume you have an API endpoint to fetch data
-    .then(response => response.json())
-    .then(data => {
-      processData(data);
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-}
-
-// Process data received from the server
-function processData(data) {
-  // Group data by day of the week
-  dataByDay = {};
-  hullPointsByDay = {}; // Reset hull points by day
-
-  data.forEach(point => {
-    var date = new Date(point.timestamp);
-    var dayIndex = date.getDay();
-    var day = daysOfWeek[dayIndex];
-
-    if (!dataByDay[day]) {
-      dataByDay[day] = [];
-    }
-
-    dataByDay[day].push({
-      lat: point.latitude,
-      lng: point.longitude,
-      timestamp: point.timestamp,
-    });
-  });
-
-  // For each day, compute the convex hull and store hull points
-  daysOfWeek.slice(0, 7).forEach(day => { // Exclude 'RefinedArea'
-    const tabLink = document.getElementById(day + '-tab');
-    if (dataByDay[day] && dataByDay[day].length > 0) {
-      // Enable tab if data exists
-      tabLink.classList.remove('disabled');
-      var hullPoints = computeConvexHull(dataByDay[day]);
-      hullPointsByDay[day] = hullPoints;
-    } else {
-      // Disable tab if no data
-      tabLink.classList.add('disabled');
-    }
-  });
-
-  // Update the maps
-  updateMaps();
-}
-
-
-// Update the maps with new data
-function updateMaps() {
-  daysOfWeek.forEach(function(day) {
-    if (maps[day]) {
-      // Clear existing markers and polygons
-      if (markers[day]) {
-        markers[day].forEach(function(marker) {
-          marker.setMap(null);
+    // Function to fetch data from the server and update maps
+    function fetchDataAndUpdateMaps() {
+      fetch('/api/data')  // Assume you have an API endpoint to fetch data
+        .then(response => response.json())
+        .then(data => {
+          processData(data);
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
         });
-      }
-      if (polygons[day]) {
-        polygons[day].setMap(null);
-      }
+    }
 
-      // Initialize markers array
-      markers[day] = [];
+    // Process data received from the server
+    function processData(data) {
+      // Group data by day of the week
+      dataByDay = {};
+      hullPointsByDay = {};
 
-      if (day !== 'RefinedArea') {
-        // For individual days
-        if (dataByDay[day]) {
-          var hullPoints = hullPointsByDay[day];
-          if (hullPoints && hullPoints.length >= 3) {
-            var polygon = new google.maps.Polygon({
-              paths: hullPoints,
-              strokeColor: '#3CB043',
-              strokeOpacity: 0.8,
-              strokeWeight: 2,
-              fillColor: '#74B72E',
-              fillOpacity: 0.35,
-              map: maps[day],
-            });
-            polygons[day] = polygon;
+      data.forEach(point => {
+        var date = new Date(point.timestamp);
+        var dayIndex = date.getDay();
+        var day = daysOfWeek[dayIndex];
 
-            // Place markers at the vertices of the polygon
-            hullPoints.forEach(function(point) {
-              var marker = new google.maps.Marker({
-                position: { lat: point.lat, lng: point.lng },
-                map: maps[day],
-                icon: {
-                  path: google.maps.SymbolPath.CIRCLE,
-                  scale: 3.5, // Adjust the size of the marker
-                  fillColor: '#888a89', // Marker color
-                  fillOpacity: 1,
-                  strokeWeight: 1,
-                  strokeColor: '#FFFFFF',
-                },
-              });
-              markers[day].push(marker);
-            });
-
-            // Auto-zoom to fit the geofence
-            var bounds = new google.maps.LatLngBounds();
-            hullPoints.forEach(function(point) {
-              bounds.extend(new google.maps.LatLng(point.lat, point.lng));
-            });
-            // Only fit bounds if the map is visible
-            if ($('#' + day).hasClass('active')) {
-              maps[day].fitBounds(bounds);
-            }
-            // Store bounds
-            boundsByDay[day] = bounds;
-          } else {
-            // Handle cases with less than 3 points
-            // Place markers at individual points
-            dataByDay[day].forEach(function(coord) {
-              var marker = new google.maps.Marker({
-                position: { lat: coord.lat, lng: coord.lng },
-                map: maps[day],
-                icon: {
-                  path: google.maps.SymbolPath.CIRCLE,
-                  scale: 3.5,
-                  fillColor: '#888a89',
-                  fillOpacity: 1,
-                  strokeWeight: 1,
-                  strokeColor: '#FFFFFF',
-                },
-              });
-              markers[day].push(marker);
-            });
-
-            // Adjust the map to fit all markers
-            var bounds = new google.maps.LatLngBounds();
-            markers[day].forEach(function(marker) {
-              bounds.extend(marker.getPosition());
-            });
-            if ($('#' + day).hasClass('active')) {
-              maps[day].fitBounds(bounds);
-            }
-            boundsByDay[day] = bounds;
-          }
+        if (!dataByDay[day]) {
+          dataByDay[day] = [];
         }
-      } else {
-        // For RefinedArea tab
-        // Combine hull points from all days
-        var combinedHullPoints = [];
-        var pointSet = new Set();
-        Object.values(hullPointsByDay).forEach(function(hullPoints) {
-          hullPoints.forEach(function(point) {
-            var key = point.lat + ',' + point.lng;
-            if (!pointSet.has(key)) {
-              pointSet.add(key);
-              combinedHullPoints.push(point);
-            }
-          });
+
+        dataByDay[day].push({
+          lat: point.latitude,
+          lng: point.longitude,
+          timestamp: point.timestamp,
         });
+      });
 
-        // Compute the convex hull of combined hull points
-        var refinedHullPoints = computeConvexHull(combinedHullPoints);
-        if (refinedHullPoints && refinedHullPoints.length >= 3) {
-          var polygon = new google.maps.Polygon({
-            paths: refinedHullPoints,
-            strokeColor: '#3CB043', // Different color for refined area
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#74B72E',
-            fillOpacity: 0.35,
-            map: maps[day],
-          });
-          polygons[day] = polygon;
-
-          // Place markers at the vertices of the refined polygon
-          refinedHullPoints.forEach(function(point) {
-            var marker = new google.maps.Marker({
-              position: { lat: point.lat, lng: point.lng },
-              map: maps[day],
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 3.5,
-                fillColor: '#888a89',
-                fillOpacity: 1,
-                strokeWeight: 1,
-                strokeColor: '#FFFFFF',
-              },
-            });
-            markers[day].push(marker);
-          });
-
-          // Auto-zoom to fit the refined geofence
-          var bounds = new google.maps.LatLngBounds();
-          refinedHullPoints.forEach(function(point) {
-            bounds.extend(new google.maps.LatLng(point.lat, point.lng));
-          });
-          if ($('#' + day).hasClass('active')) {
-            maps[day].fitBounds(bounds);
-          }
-          boundsByDay[day] = bounds;
+      // For each day, compute the convex hull and store hull points
+      daysOfWeek.slice(0, 7).forEach(day => {
+        const tabLink = document.getElementById(day + '-tab');
+        if (dataByDay[day] && dataByDay[day].length > 0) {
+          // Enable tab if data exists
+          tabLink.classList.remove('disabled');
+          var hullPoints = computeConvexHull(dataByDay[day]);
+          hullPointsByDay[day] = hullPoints;
         } else {
-          // Handle cases with less than 3 points
-          // Similar to previous code
+          // Disable tab if no data
+          tabLink.classList.add('disabled');
         }
+      });
+
+      // Update the maps
+      updateMaps();
+    }
+
+    // Convex Hull algorithm (Graham Scan)
+    function computeConvexHull(points) {
+      if (points.length <= 1) return points;
+
+      // Sort points by x-coordinate (lng), then by y-coordinate (lat)
+      points.sort(function(a, b) {
+        return a.lng - b.lng || a.lat - b.lat;
+      });
+
+      var lower = [];
+      for (var i = 0; i < points.length; i++) {
+        while (lower.length >= 2 &&
+          cross(lower[lower.length - 2], lower[lower.length - 1],
+                points[i]) <= 0) {
+          lower.pop();
+        }
+        lower.push(points[i]);
       }
-    }
-  });
-}
 
-// Convex Hull algorithm (Graham Scan)
-function computeConvexHull(points) {
-  if (points.length <= 1) return points;
+      var upper = [];
+      for (var i = points.length - 1; i >= 0; i--) {
+        while (upper.length >= 2 &&
+          cross(upper[upper.length - 2], upper[upper.length - 1],
+                points[i]) <= 0) {
+          upper.pop();
+        }
+        upper.push(points[i]);
+      }
 
-  // Sort points by x-coordinate (lng), then by y-coordinate (lat)
-  points.sort(function(a, b) {
-    return a.lng - b.lng || a.lat - b.lat;
-  });
-
-  var lower = [];
-  for (var i = 0; i < points.length; i++) {
-    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
+      // Remove the last point of each list (it's the starting point of
+      // the other list)
       lower.pop();
-    }
-    lower.push(points[i]);
-  }
-
-  var upper = [];
-  for (var i = points.length - 1; i >= 0; i--) {
-    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], points[i]) <= 0) {
       upper.pop();
+
+      // Concatenate the lower and upper parts to get the full hull
+      return lower.concat(upper);
     }
-    upper.push(points[i]);
-  }
 
-  // Remove the last point of each list (it's the starting point of the other list)
-  lower.pop();
-  upper.pop();
+    // Cross product of OA and OB vectors
+    function cross(o, a, b) {
+      return (a.lng - o.lng) * (b.lat - o.lat) -
+             (a.lat - o.lat) * (b.lng - o.lng);
+    }
 
-  // Concatenate the lower and upper parts to get the full hull
-  return lower.concat(upper);
-}
+    // Function to compute the average polygon
+    function computeAveragePolygon(polygons) {
+      // Input: polygons is an array of turf polygon features
 
-// Cross product of OA and OB vectors
-function cross(o, a, b) {
-  return (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
-}
+      // 1. Get the bounding box of all polygons
+      var bbox = turf.bbox(turf.featureCollection(polygons));
 
-// Initialize the maps and tabs
-function initMaps() {
-  var tabsContainer = document.getElementById('dayTabs');
-  var tabsContent = document.getElementById('dayTabsContent');
+      // 2. Create a grid of points over the bounding box
+      var cellSize = 0.0005; // in degrees, adjust as needed
+      var options = { units: 'degrees' };
+      var pointGrid = turf.pointGrid(bbox, cellSize, options);
 
-  daysOfWeek.forEach(function(day, index) {
-    // Create tab
-    var tab = document.createElement('li');
-    tab.classList.add('nav-item');
-    var tabLink = document.createElement('a');
-    tabLink.classList.add('nav-link');
-    if (index === 0) tabLink.classList.add('active');
-    tabLink.id = day + '-tab';
-    tabLink.dataset.toggle = 'tab';
-    tabLink.href = '#' + day;
-    tabLink.role = 'tab';
-    tabLink.setAttribute('aria-controls', day);
-    tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-    tabLink.innerText = day === 'RefinedArea' ? 'Refined Safe Area' : day;
-    tab.appendChild(tabLink);
-    tabsContainer.appendChild(tab);
+      // 3. For each point in the grid, count how many polygons contain it
+      var numPolygons = polygons.length;
+      var pointsInPolygons = pointGrid.features.map(function (point) {
+        var count = 0;
+        polygons.forEach(function (polygon) {
+          if (turf.booleanPointInPolygon(point, polygon)) {
+            count += 1;
+          }
+        });
+        point.properties.count = count / numPolygons; // Normalize count
+        return point;
+      });
 
-    // Create tab content
-    var tabPane = document.createElement('div');
-    tabPane.classList.add('tab-pane', 'fade');
-    if (index === 0) tabPane.classList.add('show', 'active');
-    tabPane.id = day;
-    tabPane.role = 'tabpanel';
-    tabPane.setAttribute('aria-labelledby', day + '-tab');
+      // 4. Filter points where normalized count >= 0.5
+      var threshold = 0.5;
+      var selectedPoints = pointsInPolygons.filter(function (point) {
+        return point.properties.count >= threshold;
+      });
 
-    // Add heading to tab content
-    var heading = document.createElement('h3');
-    heading.innerText = day === 'RefinedArea' ? 'Refined Safe Area for the Week' : day;
-    tabPane.appendChild(heading);
+      // 5. Use turf.concave or turf.convex to create a polygon from the points
+      if (selectedPoints.length < 3) {
+        // Not enough points to form a polygon
+        return null;
+      }
 
-    var mapDiv = document.createElement('div');
-    mapDiv.id = 'map' + day;
-    mapDiv.classList.add('map');
-    tabPane.appendChild(mapDiv);
-    tabsContent.appendChild(tabPane);
+      var selectedPointsFC = turf.featureCollection(selectedPoints);
+      var avgPolygon = turf.concave(selectedPointsFC, {
+        maxEdge: 0.05,
+        units: 'degrees'
+      });
+      if (!avgPolygon) {
+        // If concave fails, use convex hull
+        avgPolygon = turf.convex(selectedPointsFC);
+      }
 
-    // Initialize map
-    maps[day] = new google.maps.Map(mapDiv, {
-      center: { lat: 30.616249, lng: -96.336853 },
-      zoom: 15,
+      return avgPolygon;
+    }
+
+    // Update the maps with new data
+    function updateMaps() {
+      daysOfWeek.forEach(function(day) {
+        if (maps[day]) {
+          // Clear existing markers and polygons
+          if (markers[day]) {
+            markers[day].forEach(function(marker) {
+              marker.setMap(null);
+            });
+          }
+          if (polygons[day]) {
+            polygons[day].setMap(null);
+          }
+
+          // Initialize markers array
+          markers[day] = [];
+
+          if (day !== 'RefinedArea') {
+            // For individual days
+            if (dataByDay[day]) {
+              var hullPoints = hullPointsByDay[day];
+              if (hullPoints && hullPoints.length >= 3) {
+                var polygon = new google.maps.Polygon({
+                  paths: hullPoints,
+                  strokeColor: '#3CB043',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 2,
+                  fillColor: '#74B72E',
+                  fillOpacity: 0.35,
+                  map: maps[day],
+                });
+                polygons[day] = polygon;
+
+                // Place markers at the vertices of the polygon
+                hullPoints.forEach(function(point) {
+                  var marker = new google.maps.Marker({
+                    position: { lat: point.lat, lng: point.lng },
+                    map: maps[day],
+                    icon: {
+                      path: google.maps.SymbolPath.CIRCLE,
+                      scale: 3.5,
+                      fillColor: '#888a89',
+                      fillOpacity: 1,
+                      strokeWeight: 1,
+                      strokeColor: '#FFFFFF',
+                    },
+                  });
+                  markers[day].push(marker);
+                });
+
+                // Auto-zoom to fit the geofence
+                var bounds = new google.maps.LatLngBounds();
+                hullPoints.forEach(function(point) {
+                  bounds.extend(new google.maps.LatLng(point.lat, point.lng));
+                });
+                // Only fit bounds if the map is visible
+                if (document.getElementById(day).classList.contains('active')) {
+                  maps[day].fitBounds(bounds);
+                }
+                // Store bounds
+                boundsByDay[day] = bounds;
+              } else {
+                // Handle cases with less than 3 points
+                // Place markers at individual points
+                dataByDay[day].forEach(function(coord) {
+                  var marker = new google.maps.Marker({
+                    position: { lat: coord.lat, lng: coord.lng },
+                    map: maps[day],
+                    icon: {
+                      path: google.maps.SymbolPath.CIRCLE,
+                      scale: 3.5,
+                      fillColor: '#888a89',
+                      fillOpacity: 1,
+                      strokeWeight: 1,
+                      strokeColor: '#FFFFFF',
+                    },
+                  });
+                  markers[day].push(marker);
+                });
+
+                // Adjust the map to fit all markers
+                var bounds = new google.maps.LatLngBounds();
+                markers[day].forEach(function(marker) {
+                  bounds.extend(marker.getPosition());
+                });
+                if (document.getElementById(day).classList.contains('active')) {
+                  maps[day].fitBounds(bounds);
+                }
+                boundsByDay[day] = bounds;
+              }
+            }
+          } else {
+            // For RefinedArea tab
+            // Collect the hull polygons from all days
+            var polygonsArray = [];
+            Object.values(hullPointsByDay).forEach(function(hullPoints) {
+              if (hullPoints && hullPoints.length >= 3) {
+                var coordinates = hullPoints.map(function(point) {
+                  return [point.lng, point.lat];
+                });
+                coordinates.push(coordinates[0]); // Close the polygon
+                var polygon = turf.polygon([coordinates]);
+                polygonsArray.push(polygon);
+              }
+            });
+
+            // Compute the average polygon
+            var avgPolygon = computeAveragePolygon(polygonsArray);
+
+            if (avgPolygon) {
+              // Display the avgPolygon on the map
+              var refinedPolygon = new google.maps.Polygon({
+                paths: avgPolygon.geometry.coordinates[0].map(
+                  function(coord) {
+                    return { lat: coord[1], lng: coord[0] };
+                  }),
+                strokeColor: '#FF0000', // Different color for refined area
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: maps[day],
+              });
+              polygons[day] = refinedPolygon;
+
+              // Place markers at the vertices of the refined polygon
+              avgPolygon.geometry.coordinates[0].forEach(function(coord) {
+                var marker = new google.maps.Marker({
+                  position: { lat: coord[1], lng: coord[0] },
+                  map: maps[day],
+                  icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 3.5,
+                    fillColor: '#888a89',
+                    fillOpacity: 1,
+                    strokeWeight: 1,
+                    strokeColor: '#FFFFFF',
+                  },
+                });
+                markers[day].push(marker);
+              });
+
+              // Auto-zoom to fit the refined geofence
+              var bounds = new google.maps.LatLngBounds();
+              avgPolygon.geometry.coordinates[0].forEach(function(coord) {
+                bounds.extend(new google.maps.LatLng(coord[1], coord[0]));
+              });
+              if (document.getElementById(day).classList.contains('active')) {
+                maps[day].fitBounds(bounds);
+              }
+              boundsByDay[day] = bounds;
+            } else {
+              // Handle cases with less than 3 points
+              // Similar to previous code
+            }
+          }
+        }
+      });
+    }
+
+    // Function to schedule the reset at midnight on Saturday
+    function scheduleWeeklyReset() {
+        const now = new Date();
+        // Calculate the next Saturday
+        let day = now.getDay(); // 0 (Sun) to 6 (Sat)
+        let daysUntilSaturday = (6 - day);
+        // If today is Saturday, schedule for next Saturday
+        if (daysUntilSaturday === 0 && now.getHours() >= 0) {
+            daysUntilSaturday = 7;
+        }
+        // Set the target date to next Saturday at midnight
+        let nextReset = new Date(now);
+        nextReset.setDate(now.getDate() + daysUntilSaturday);
+        nextReset.setHours(24, 0, 0, 0); // Midnight
+
+        let timeUntilReset = nextReset - now;
+
+        console.log(`Scheduled next reset in ${timeUntilReset / 1000} seconds.`);
+
+        // Set timeout to trigger the reset
+        setTimeout(function() {
+            resetWeeklyData();
+            // Schedule the next reset
+            scheduleWeeklyReset();
+        }, timeUntilReset);
+    }
+
+    // Function to reset data
+    function resetWeeklyData() {
+        console.log('Resetting weekly data...');
+
+        // Clear data structures
+        dataByDay = {};
+        hullPointsByDay = {};
+        boundsByDay = {};
+
+        // Remove markers and polygons from all maps
+        daysOfWeek.forEach(function(day) {
+            if (markers[day]) {
+                markers[day].forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers[day] = [];
+            }
+            if (polygons[day]) {
+                polygons[day].setMap(null);
+                polygons[day] = null;
+            }
+
+            // Optionally, reset the map view
+            maps[day].setCenter({ lat: 30.616249, lng: -96.336853 });
+            maps[day].setZoom(15);
+        });
+
+        // Update the UI to reflect cleared data
+        // Disable all day tabs except RefinedArea
+        daysOfWeek.slice(0, 7).forEach(function(day) {
+            var tabLink = document.getElementById(day + '-tab');
+            if (tabLink) {
+                tabLink.classList.add('disabled');
+                tabLink.classList.remove('active');
+            }
+        });
+
+        // Disable RefinedArea tab
+        var refinedTab = document.getElementById('RefinedArea-tab');
+        if (refinedTab) {
+            refinedTab.classList.add('disabled');
+            refinedTab.classList.remove('active');
+        }
+
+        // Optionally, clear the tab content
+        daysOfWeek.forEach(function(day) {
+            var tabPane = document.getElementById(day);
+            if (tabPane) {
+                tabPane.innerHTML = `
+                    <h3>${day === 'RefinedArea' ? 'Refined Safe Area for the Week' : day}</h3>
+                    <div id="map${day}" class="map"></div>
+                `;
+                // Reinitialize the map
+                maps[day].setCenter({ lat: 30.616249, lng: -96.336853 });
+                maps[day].setZoom(15);
+            }
+        });
+
+        // Fetch new data immediately after reset
+        fetchDataAndUpdateMaps();
+
+        // Show the reset alert
+        var resetAlert = document.getElementById('resetAlert');
+        resetAlert.classList.remove('d-none');
+        resetAlert.classList.add('show');
+
+        console.log('Weekly data has been reset.');
+    }
+
+    // Initialize the maps and tabs
+    function initMaps() {
+        var tabsContainer = document.getElementById('dayTabs');
+        var tabsContent = document.getElementById('dayTabsContent');
+
+        daysOfWeek.forEach(function(day, index) {
+            // Create tab
+            var tab = document.createElement('li');
+            tab.classList.add('nav-item');
+            var tabLink = document.createElement('a');
+            tabLink.classList.add('nav-link');
+            if (index === 0) tabLink.classList.add('active');
+            tabLink.id = day + '-tab';
+            tabLink.dataset.bsToggle = 'tab';
+            tabLink.href = '#' + day;
+            tabLink.role = 'tab';
+            tabLink.setAttribute('aria-controls', day);
+            tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+            tabLink.innerText = day === 'RefinedArea' ? 'Refined Safe Area' : day;
+            tab.appendChild(tabLink);
+            tabsContainer.appendChild(tab);
+
+            // Create tab content
+            var tabPane = document.createElement('div');
+            tabPane.classList.add('tab-pane', 'fade');
+            if (index === 0) tabPane.classList.add('show', 'active');
+            tabPane.id = day;
+            tabPane.role = 'tabpanel';
+            tabPane.setAttribute('aria-labelledby', day + '-tab');
+
+            // Add heading to tab content
+            var heading = document.createElement('h3');
+            heading.innerText = day === 'RefinedArea' ?
+                                'Refined Safe Area for the Week' : day;
+            tabPane.appendChild(heading);
+
+            var mapDiv = document.createElement('div');
+            mapDiv.id = 'map' + day;
+            mapDiv.classList.add('map');
+            tabPane.appendChild(mapDiv);
+            tabsContent.appendChild(tabPane);
+
+            // Initialize map
+            maps[day] = new google.maps.Map(mapDiv, {
+                center: { lat: 30.616249, lng: -96.336853 },
+                zoom: 15,
+            });
+
+            // Initialize markers and polygons
+            markers[day] = [];
+            polygons[day] = null;
+        });
+
+        // Fetch data and update maps
+        fetchDataAndUpdateMaps();
+
+        // Set an interval to fetch data every ten seconds
+        setInterval(fetchDataAndUpdateMaps, 10000);
+
+        // Event listener for tab shown
+        var tabLinks = document.querySelectorAll('#dayTabs a[data-bs-toggle="tab"]');
+        tabLinks.forEach(function(tabLink) {
+            tabLink.addEventListener('shown.bs.tab', function (e) {
+                var dayText = e.target.textContent;
+                var day = dayText === 'Refined Safe Area' ? 'RefinedArea' : dayText;
+                var map = maps[day];
+                var bounds = boundsByDay[day];
+                if (map && bounds) {
+                    google.maps.event.trigger(map, 'resize');
+                    map.fitBounds(bounds);
+                }
+            });
+        });
+    }
+
+    // Initialize maps and schedule reset after the page has loaded
+    window.onload = function() {
+        initMaps();
+        scheduleWeeklyReset();
+    };
+
+    // Theme Preference Script
+    // Check localStorage for theme preference
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else if (currentTheme === 'light') {
+        document.body.classList.remove('dark-mode');
+    }
+
+     // Toggle button text based on collapse state
+    var instructionsCollapse = document.getElementById('instructionsCollapse');
+    var toggleInstructionsBtn = document.getElementById('toggleInstructionsBtn');
+
+    instructionsCollapse.addEventListener('show.bs.collapse', function () {
+      toggleInstructionsBtn.textContent = 'Hide Instructions';
     });
 
-    // Initialize markers and polygons
-    markers[day] = [];
-    polygons[day] = null;
-  });
-
-  // Fetch data and update maps
-  fetchDataAndUpdateMaps();
-
-  // Set an interval to fetch data periodically
-  setInterval(fetchDataAndUpdateMaps, 2000); // Runs every x milliseconds: 1000 millisecond = 1 sec
-
-  // Event listener for tab shown
-  $('#dayTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var dayText = $(e.target).text();
-    var day = dayText === 'Refined Safe Area' ? 'RefinedArea' : dayText;
-    var map = maps[day];
-    var bounds = boundsByDay[day];
-    if (map && bounds) {
-      google.maps.event.trigger(map, 'resize');
-      map.fitBounds(bounds);
-    }
-  });
-}
-
-// Initialize maps after the page has loaded
-window.onload = initMaps;
+    instructionsCollapse.addEventListener('hide.bs.collapse', function () {
+      toggleInstructionsBtn.textContent = 'Show Instructions';
+    });
 
 </script>
 

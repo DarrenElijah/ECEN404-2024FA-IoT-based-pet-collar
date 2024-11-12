@@ -1,84 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Pet Tracker WatchDog - About</title>
+  <title>WatchDog - About</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+  
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .navbar-brand {
+      font-weight: 700;
+    }
+    .nav-link.active {
+      color: #fff;
+    }
+    /* Heading Style */
     h1 {
-      font-family: 'Roboto', sans-serif; 
-      font-size: 3rem; 
-      font-weight: bold; 
-      color: #008080; 
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ff5722;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    }
+    /* Footer */
+    footer {
+      background-color: #212529;
+      color: #fff;
+      padding: 2rem 0;
+    }
+    footer a {
+      color: #ff5722;
+    }
+    footer a:hover {
+      color: #e64a19;
+    }
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .dark-mode .navbar {
+      background-color: #1f1f1f;
+    }
+    .dark-mode .nav-link.active {
+      color: #ffa942;
+    }
+    .dark-mode .navbar-brand,
+    .dark-mode .nav-link {
+      color: #ffffff;
+    }
+    .dark-mode h1 {
+      color: #ff9800;
+    }
+    .dark-mode p {
+      color: #ffffff;
+    }
+    .dark-mode footer {
+      background-color: #1f1f1f;
+    }
+    .dark-mode footer a {
+      color: #ff9800;
+    }
+    .dark-mode footer a:hover {
+      color: #ffb74d;
     }
   </style>
-
-
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">WatchDog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="tracking.html">Tracking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="features.html">Feature Activation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="contacts.html">Contact/Settings</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<!-- Main content -->
-<div class="container-fluid main-content">
-  <div class="row">
-    <div class="col-md-6 offset-md-3 text-center">
-      <h1 class="display-4">About WATCHDOG</h1>
-      <p class="lead">The Pet Collar Watchdog revolutionizes pet safety with its cutting-edge hardware and intelligent software features. Integrated into a sleek collar design, this innovative solution has a GPS module, 
-        live camera feed, buzzer, and communication modules, creating a comprehensive pet tracking system. By continuously monitoring pets' coordinates, the collar ensures they remain within the owner's predefined safe area, 
-        promptly alerting owners via email or phone alerts if any breach occurs. Notably, the system goes beyond mere tracking by leveraging sophisticated machine learning algorithms. These algorithms analyze pet movement data, 
-        dynamically suggesting optimized safe areas through a user-friendly interface. This proactive approach allows owners to adapt to their pet's behavior and environment, enhancing overall safety and peace of mind. 
-        In essence, the Pet Collar Watchdog is not just a safety tool—it's a companion for pet owners, offering unparalleled convenience, security, and connectivity. With its advanced features and intuitive design, 
-        it sets a new standard for pet care in the modern age.</p>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Update the links as per your website structure -->
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="tracking.html">Tracking</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="features.html">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="refine_safeArea.html">Safe Area</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contacts.html">Contact/Settings</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main content -->
+  <div class="container-fluid main-content mt-5 pt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2 text-center">
+        <h1 class="display-4">About WatchDog</h1>
+        <p class="lead">
+          The Pet Collar WatchDog revolutionizes pet safety with its cutting-edge hardware and intelligent software features. Integrated into a sleek collar design, this innovative solution has a GPS module, live camera feed, buzzer, and communication modules, creating a comprehensive pet tracking system.
+        </p>
+        <p class="lead">
+          By continuously monitoring pets' coordinates, the collar ensures they remain within the owner's predefined safe area, promptly alerting owners via email or phone alerts if any breach occurs. Notably, the system goes beyond mere tracking by leveraging sophisticated machine learning algorithms. These algorithms analyze pet movement data, dynamically suggesting optimized safe areas through a user-friendly interface.
+        </p>
+        <p class="lead">
+          This proactive approach allows owners to adapt to their pet's behavior and environment, enhancing overall safety and peace of mind. In essence, the Pet Collar WatchDog is not just a safety tool—it's a companion for pet owners, offering unparalleled convenience, security, and connectivity. With its advanced features and intuitive design, it sets a new standard for pet care in the modern age.
+        </p>
+      </div>
     </div>
   </div>
-</div>
+  
+  <!-- Footer -->
+  <footer class="text-center mt-5">
+    <div class="container">
+      <p>© 2024 WatchDog. All rights reserved.</p>
+      <p>Made by <a href="#">Team 34</a></p>
+      <div>
+        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Scripts -->
+  <!-- Bootstrap 5 JS Bundle (includes Popper.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Theme Preference Script -->
+  <script>
+    // Check localStorage for theme preference
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
 
-<!-- Footer -->
-<footer class="footer mt-auto py-3 bg-dark text-white">
-  <div class="container text-center">
-    <span class="text-muted">Made By Team 34</span>
-  </div>
-</footer>
-
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else if (currentTheme === 'light') {
+      document.body.classList.remove('dark-mode');
+    }
+  </script>
+  
 </body>
 </html>

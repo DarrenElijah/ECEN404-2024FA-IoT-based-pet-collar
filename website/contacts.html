@@ -1,80 +1,592 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Pet Tracker WatchDog - About</title>
+  <title>WatchDog - Contacts/Settings</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css"> <!-- Custom styles -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+  
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
+    /* Existing Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .navbar-brand {
+      font-weight: 700;
+    }
+    .nav-link.active {
+      color: #fff;
+    }
+    /* Heading Style */
     h1 {
-      font-family: 'Roboto', sans-serif; 
-      font-size: 3rem; 
-      font-weight: bold; 
-      color: #008080; 
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* horizontal offset, vertical offset, blur radius, color */
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ff5722;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    }
+    /* Contact Info */
+    .contact-info p {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .contact-info a {
+      color: #ff5722;
+      text-decoration: none;
+    }
+    .contact-info a:hover {
+      color: #e64a19;
+      text-decoration: underline;
+    }
+    /* User Email Display */
+    .user-email h5 {
+      margin-bottom: 1rem;
+    }
+    /* Footer */
+    footer {
+      background-color: #212529;
+      color: #fff;
+      padding: 2rem 0;
+    }
+    footer a {
+      color: #ff5722;
+    }
+    footer a:hover {
+      color: #e64a19;
+    }
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .dark-mode .navbar {
+      background-color: #1f1f1f;
+    }
+    .dark-mode .nav-link.active {
+      color: #ffa942;
+    }
+    .dark-mode .navbar-brand,
+    .dark-mode .nav-link {
+      color: #ffffff;
+    }
+    .dark-mode h1 {
+      color: #ff9800;
+    }
+    .dark-mode .contact-info a {
+      color: #ff9800;
+    }
+    .dark-mode .contact-info a:hover {
+      color: #ffb74d;
+    }
+    .dark-mode footer {
+      background-color: #1f1f1f;
+    }
+    .dark-mode footer a {
+      color: #ff9800;
+    }
+    .dark-mode footer a:hover {
+      color: #ffb74d;
+    }
+    .theme-toggle-btn {
+      margin-top: 20px;
+    }
+    /* Updated Button Styles */
+    .btn-primary {
+      background-color: #ff5722;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #e64a19;
+    }
+    .dark-mode .btn-primary {
+      background-color: #ff9800;
+    }
+    .dark-mode .btn-primary:hover {
+      background-color: #ffb74d;
+    }
+
+    /* Dark Mode Styles for Modals */
+    .dark-mode .modal-content {
+      background-color: #1f1f1f;
+      color: #ffffff;
+    }
+    .dark-mode .modal-header,
+    .dark-mode .modal-footer {
+      border-color: #333333;
+    }
+    .dark-mode .form-control {
+      background-color: #333333;
+      color: #ffffff;
+      border-color: #555555;
+    }
+    .dark-mode .form-control::placeholder {
+      color: #bbbbbb;
+    }
+    .dark-mode .btn-close {
+      filter: invert(1);
+    }
+    .dark-mode .invalid-feedback {
+      color: #ff6b6b;
+    }
+
+    /* Flex Container for Buttons */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      gap: 15px; /* Consistent spacing between buttons */
+    }
+
+    /* Flex Container for "Edit Email" Button */
+    .edit-email-group {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px; /* Space below the Edit Email section */
+      gap: 15px; /* Consistent spacing if multiple buttons in future */
+    }
+
+    /* Ensure All Buttons Have the Same Width */
+    .btn-primary {
+      width: 200px; /* Uniform width for all primary buttons */
     }
   </style>
-
 </head>
 <body>
+  
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">WatchDog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Pet Tracker WatchDog</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="tracking.html">Tracking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="features.html">Feature Activation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="refine_safeArea.html">Refine Safe area</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="about.html">About</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Contact/Settings</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<!-- Main content -->
-<div class="container-fluid main-content">
-  <div class="row">
-    <div class="col-md-6 offset-md-3 text-center">
-      <h1 class="display-4">Contacts/Settings</h1>
-      <p>Darren Lefever: darren.elijah19@tamu.edu</p>
-      <p>Max Kotas: maxtkotas@tamu.edu</p>
-      <p>Timothy Thompson: timothythompson@tamu.edu</p>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <!-- Update the links as per your website structure -->
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="tracking.html">Tracking</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="features.html">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="refine_safeArea.html">Safe Area</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Contact/Settings</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Edit Email Modal -->
+  <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"> <!-- Modal Header -->
+          <h5 class="modal-title" id="editEmailModalLabel">Edit Your Email</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body"> <!-- Modal Body -->
+          <form id="editEmailForm">
+            <div class="mb-3">
+              <label for="newEmailInput" class="form-label">New Email Address</label>
+              <input type="email" class="form-control" id="newEmailInput" placeholder="Enter your new email" required>
+              <!-- Error message container -->
+              <div id="newEmailError" class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer"> <!-- Modal Footer -->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveNewEmailBtn">Save</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- Footer -->
-<footer class="footer mt-auto py-3 bg-dark text-white">
-  <div class="container text-center">
-    <span class="text-muted">Made By Team 34</span>
+  
+  <!-- Contact Support Modal -->
+  <div class="modal fade" id="contactSupportModal" tabindex="-1" aria-labelledby="contactSupportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"> <!-- Modal Header -->
+          <h5 class="modal-title" id="contactSupportModalLabel">Contact Support</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body"> <!-- Modal Body -->
+          <form id="contactSupportForm">
+            <div class="mb-3">
+              <label for="supportName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="supportName" placeholder="Your Name" required>
+              <div class="invalid-feedback">
+                Please enter your name.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="supportEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="supportEmail" placeholder="Your Email" required>
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="supportMessage" class="form-label">Message</label>
+              <textarea class="form-control" id="supportMessage" rows="5" placeholder="Your message..." required></textarea>
+              <div class="invalid-feedback">
+                Please enter your message.
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer"> <!-- Modal Footer -->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="sendSupportMessageBtn">Send Message</button>
+        </div>
+      </div>
+    </div>
   </div>
-</footer>
+  
+  <!-- Main content -->
+  <div class="container-fluid main-content mt-5 pt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2 text-center">
+        <h1 class="display-4">Contacts/Settings</h1>
+        <div class="contact-info mt-4">
+          <p><strong>Darren Lefever</strong>: <a href="mailto:darren.elijah19@tamu.edu">darren.elijah19@tamu.edu</a></p>
+          <p><strong>Max Kotas</strong>: <a href="mailto:maxtkotas@tamu.edu">maxtkotas@tamu.edu</a></p>
+          <p><strong>Timothy Thompson</strong>: <a href="mailto:timothythompson@tamu.edu">timothythompson@tamu.edu</a></p>
+        </div>
+        
+        <!-- User Email Display Section -->
+        <div class="user-email mt-4">
+          <h5>Your Email:</h5>
+          <p id="displayUserEmail">Not set</p>
+          <div class="edit-email-group">
+            <button class="btn btn-primary" id="editEmailBtn"><i class="fas fa-edit"></i> Edit Email</button>
+          </div>
+        </div>
 
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <!-- Button Group for Dark Mode and Contact Support -->
+        <div class="button-group">
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="btn btn-primary">
+            <i class="fas fa-moon"></i> Dark Mode
+          </button>
+
+          <!-- Contact Support Button -->
+          <button class="btn btn-primary" id="contactSupportBtn"><i class="fas fa-headset"></i> Contact Support</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="text-center mt-5">
+    <div class="container">
+      <p>© 2024 WatchDog. All rights reserved.</p>
+      <p>Made by <a href="#">Team 34</a></p>
+      <div>
+        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Toast Container for Notifications -->
+  <div aria-live="polite" aria-atomic="true" style="position: relative; z-index: 9999;">
+    <div id="toast-container" style="position: fixed; top: 1rem; right: 1rem;"></div>
+  </div>
+  
+  <!-- Scripts -->
+  <!-- Include EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+  <!-- Bootstrap 5 JS Bundle (includes Popper.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Include jQuery (optional, if your code uses it) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- Your JavaScript code -->
+  <script>
+    // Initialize EmailJS with your Public Key
+    (function(){
+      emailjs.init("ThoIMOAUBoInaFUOg"); // Replace with your EmailJS Public Key
+    })();
+
+    // Function to show a non-blocking toast notification
+    function showToast(message, type = 'info') {
+      const toastId = 'toast-' + Date.now();
+
+      // Define toast background color based on type
+      let bgClass = 'bg-info'; // Changed from 'bg-dark' to 'bg-info' for better visibility
+
+      if (type === 'success') {
+        bgClass = 'bg-success';
+      } else if (type === 'error') {
+        bgClass = 'bg-danger';
+      } else if (type === 'warning') {
+        bgClass = 'bg-warning';
+      }
+
+      const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      `;
+
+      const toastContainer = document.getElementById('toast-container');
+      toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+      const toastElement = document.getElementById(toastId);
+      const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+      toast.show();
+      toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+      });
+      console.log("Toast shown:", message);
+    }
+
+    // Function to update the displayed user email
+    function updateDisplayedEmail() {
+      const userEmail = localStorage.getItem('userEmail');
+      const displayEmail = document.getElementById('displayUserEmail');
+      if (userEmail) {
+        displayEmail.textContent = userEmail;
+      } else {
+        displayEmail.textContent = 'Not set';
+      }
+    }
+    
+    // Initialize the displayed email on page load
+    document.addEventListener('DOMContentLoaded', function () {
+      updateDisplayedEmail();
+      console.log("Initial userEmail:", localStorage.getItem('userEmail'));
+    });
+    
+    // Theme Toggle Functionality
+    const toggleBtn = document.getElementById('theme-toggle');
+    
+    // Check localStorage for theme preference
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+    } else if (currentTheme === 'light') {
+      document.body.classList.remove('dark-mode');
+      toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+    }
+    
+    toggleBtn.addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+    
+      let theme = 'light';
+      if (document.body.classList.contains('dark-mode')) {
+        theme = 'dark';
+        toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      } else {
+        toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+      }
+      localStorage.setItem('theme', theme);
+      showToast('Theme updated!', 'success');
+      console.log("Theme set to:", theme);
+    });
+    
+    // Edit Email Button Event Listener
+    const editEmailBtn = document.getElementById('editEmailBtn');
+    const editEmailModal = new bootstrap.Modal(document.getElementById('editEmailModal'));
+    
+    editEmailBtn.addEventListener('click', function () {
+      // Pre-fill the input with the current email if it exists
+      const currentEmail = localStorage.getItem('userEmail') || '';
+      document.getElementById('newEmailInput').value = currentEmail;
+      // Clear previous error messages
+      document.getElementById('newEmailInput').classList.remove('is-invalid');
+      document.getElementById('newEmailError').style.display = 'none';
+      editEmailModal.show();
+      console.log("Edit Email Modal opened with email:", currentEmail);
+    });
+    
+    // Save New Email Button Event Listener
+    const saveNewEmailBtn = document.getElementById('saveNewEmailBtn');
+    
+    saveNewEmailBtn.addEventListener('click', function () {
+      const newEmailInput = document.getElementById('newEmailInput');
+      const newEmail = newEmailInput.value.trim();
+      const newEmailError = document.getElementById('newEmailError');
+    
+      // Simple email validation regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+      if (newEmail && emailRegex.test(newEmail)) {
+        // Save the new email to localStorage
+        localStorage.setItem('userEmail', newEmail);
+        console.log("User email updated to:", newEmail);
+    
+        // Update the displayed email
+        updateDisplayedEmail();
+    
+        // Close the modal
+        editEmailModal.hide();
+    
+        // Show a success toast
+        showToast('Email updated successfully!', 'success');
+      } else {
+        // Show error message
+        newEmailInput.classList.add('is-invalid');
+        newEmailError.style.display = 'block';
+        newEmailError.textContent = 'Please enter a valid email address.';
+        console.log("Invalid email attempted:", newEmail);
+      }
+    });
+    
+    // Clear error message when user starts typing in the new email input
+    document.getElementById('newEmailInput').addEventListener('input', function () {
+      this.classList.remove('is-invalid');
+      document.getElementById('newEmailError').style.display = 'none';
+    });
+    
+    // Contact Support Button Event Listener
+    const contactSupportBtn = document.getElementById('contactSupportBtn');
+    const contactSupportModal = new bootstrap.Modal(document.getElementById('contactSupportModal'));
+    
+    contactSupportBtn.addEventListener('click', function () {
+      // Clear previous form data and error messages
+      document.getElementById('contactSupportForm').reset();
+      document.getElementById('supportName').classList.remove('is-invalid');
+      document.getElementById('supportEmail').classList.remove('is-invalid');
+      document.getElementById('supportMessage').classList.remove('is-invalid');
+      showToast('Please fill out the form below to contact support.', 'info');
+      contactSupportModal.show();
+      console.log("Contact Support Modal opened.");
+    });
+    
+    // Send Support Message Button Event Listener
+    const sendSupportMessageBtn = document.getElementById('sendSupportMessageBtn');
+    
+    sendSupportMessageBtn.addEventListener('click', function () {
+      const name = document.getElementById('supportName').value.trim();
+      const email = document.getElementById('supportEmail').value.trim();
+      const message = document.getElementById('supportMessage').value.trim();
+    
+      let valid = true;
+    
+      // Validate Name
+      if (name === '') {
+        document.getElementById('supportName').classList.add('is-invalid');
+        valid = false;
+      } else {
+        document.getElementById('supportName').classList.remove('is-invalid');
+      }
+    
+      // Validate Email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        document.getElementById('supportEmail').classList.add('is-invalid');
+        valid = false;
+      } else {
+        document.getElementById('supportEmail').classList.remove('is-invalid');
+      }
+    
+      // Validate Message
+      if (message === '') {
+        document.getElementById('supportMessage').classList.add('is-invalid');
+        valid = false;
+      } else {
+        document.getElementById('supportMessage').classList.remove('is-invalid');
+      }
+    
+      if (valid) {
+        // Send email via EmailJS
+        sendSupportEmail(name, email, message);
+      } else {
+        showToast('Please fix the errors in the form.', 'error');
+        console.log("Support form validation failed.");
+      }
+    });
+    
+    function sendSupportEmail(name, email, message) {
+      var serviceID = "service_s2ck7km"; // Replace with your EmailJS service ID
+      var templateID = "template_weta81g"; // Replace with your EmailJS template ID
+
+      var templateParams = {
+        from_name: name,
+        from_email: email,
+        message: message,
+        to_email: 'darren.elijah19@tamu.edu' // Specify the recipient email
+      };
+    
+      emailjs.send(serviceID, templateID, templateParams)
+        .then(function(response) {
+          console.log('Support email sent successfully!', response.status, response.text);
+          showToast('Your message has been sent successfully!', 'success');
+          contactSupportModal.hide();
+          document.getElementById('contactSupportForm').reset();
+        }, function(error) {
+          console.error('Failed to send support email:', error);
+          showToast('Failed to send your message. Please try again later.', 'error');
+        });
+    }
+  
+    // Listen for changes to localStorage from other tabs/pages
+    window.addEventListener('storage', function(event) {
+      if (event.key === 'userEmail') {
+        updateDisplayedEmail();
+        if (event.newValue) {
+          showToast('Your email has been updated!', 'success');
+          console.log("Detected userEmail change to:", event.newValue);
+        } else {
+          showToast('Your email has been removed.', 'info');
+          console.log("Detected userEmail removal.");
+        }
+      }
+      if (event.key === 'theme') {
+        if (event.newValue === 'dark') {
+          document.body.classList.add('dark-mode');
+          toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+          showToast('Dark mode enabled!', 'info');
+          console.log("Theme changed to dark via storage event.");
+        } else if (event.newValue === 'light') {
+          document.body.classList.remove('dark-mode');
+          toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+          showToast('Light mode enabled!', 'info');
+          console.log("Theme changed to light via storage event.");
+        }
+      }
+    });
+  </script>
+  
 </body>
 </html>
