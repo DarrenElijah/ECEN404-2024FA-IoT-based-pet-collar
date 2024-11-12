@@ -35,7 +35,7 @@
     h1 {
       font-size: 3rem;
       font-weight: 700;
-      color: #ff5722;
+      color: #6996f9;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
     }
     /* Map Section */
@@ -45,14 +45,14 @@
     }
     /* Customize Tabs */
     .nav-tabs .nav-link.active {
-      background-color: #ff5722;
+      background-color: #6996f9;
       color: #fff;
     }
     .nav-tabs .nav-link {
-      color: #ff5722;
+      color: #6996f9;
     }
     .nav-tabs .nav-link:hover {
-      color: #e64a19;
+      color: #2719e6;
     }
     /* Disable tab link */
     .nav-tabs .nav-link.disabled {
@@ -62,11 +62,11 @@
     }
     /* Customize buttons */
     .btn-primary {
-      background-color: #ff5722;
+      background-color: #6996f9;
       border: none;
     }
     .btn-primary:hover {
-      background-color: #e64a19;
+      background-color: #2719e6;
     }
     /* Footer */
     footer {
@@ -75,10 +75,10 @@
       padding: 2rem 0;
     }
     footer a {
-      color: #ff5722;
+      color: #6996f9;
     }
     footer a:hover {
-      color: #e64a19;
+      color: #2719e6;
     }
     /* Responsive adjustments */
     @media (max-width: 768px) {
@@ -95,14 +95,14 @@
       background-color: #1f1f1f;
     }
     .dark-mode .nav-link.active {
-      color: #ffa942;
+      color: #6996f9;
     }
     .dark-mode .navbar-brand,
     .dark-mode .nav-link {
       color: #ffffff;
     }
     .dark-mode h1 {
-      color: #ff9800;
+      color: #6996f9;
     }
     .dark-mode p {
       color: #ffffff;
@@ -111,33 +111,33 @@
       color: #ffffff !important;
     }
     .dark-mode .nav-tabs .nav-link.active {
-      background-color: #ff9800;
+      background-color: #6996f9;
       color: #fff;
     }
     .dark-mode .nav-tabs .nav-link {
-      color: #ff9800;
+      color: #6996f9;
     }
     .dark-mode .nav-tabs .nav-link:hover {
-      color: #ffb74d;
+      color: #2719e6;
     }
     .dark-mode .nav-tabs .nav-link.disabled {
       color: #6c757d !important;
       background-color: #2f2f2f;
     }
     .dark-mode .btn-primary {
-      background-color: #ff9800;
+      background-color: #6996f9;
     }
     .dark-mode .btn-primary:hover {
-      background-color: #ffb74d;
+      background-color: #2719e6;
     }
     .dark-mode footer {
       background-color: #1f1f1f;
     }
     .dark-mode footer a {
-      color: #ff9800;
+      color: #6996f9;
     }
     .dark-mode footer a:hover {
-      color: #ffb74d;
+      color: #2719e6;
     }
     /* Instructions Section */
     #instructions {
@@ -161,7 +161,7 @@
     }
 
     body.dark-mode #instructions h5 {
-      color: #ff9800;
+      color: #6996f9;
       margin-bottom: 15px;
     }
 
@@ -305,16 +305,52 @@
                       'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
 
     // Function to fetch data from the server and update maps
-    function fetchDataAndUpdateMaps() {
-      fetch('/api/data')  // Assume you have an API endpoint to fetch data
-        .then(response => response.json())
-        .then(data => {
-          processData(data);
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-        });
+ // Function to fetch data from the server and update maps
+function fetchDataAndUpdateMaps() {
+  fetch('/api/data')  // Assume you have an API endpoint to fetch data
+    .then(response => response.json())
+    .then(data => {
+      processData(data);
+
+      // After processing, focus on the most recent tab with data
+      focusOnMostRecentTabWithData();
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+}
+
+// Function to focus on the most recent tab with data
+function focusOnMostRecentTabWithData() {
+  // Days are in order from Sunday (0) to RefinedArea (7)
+  let mostRecentDayWithData = null;
+
+  // Find the most recent day with data
+  for (let i = daysOfWeek.length - 2; i >= 0; i--) {  // Exclude RefinedArea
+    const day = daysOfWeek[i];
+    if (dataByDay[day] && dataByDay[day].length > 0) {
+      mostRecentDayWithData = day;
+      break;
     }
+  }
+
+  // If a recent day with data was found, activate its tab
+  if (mostRecentDayWithData) {
+    const tabLink = document.getElementById(mostRecentDayWithData + '-tab');
+    const tabContent = document.getElementById(mostRecentDayWithData);
+
+    // Use Bootstrap's JavaScript method to show the tab
+    const bootstrapTab = new bootstrap.Tab(tabLink);
+    bootstrapTab.show();
+
+    // Fit the map to the bounds if available
+    if (boundsByDay[mostRecentDayWithData]) {
+      google.maps.event.trigger(maps[mostRecentDayWithData], 'resize');
+      maps[mostRecentDayWithData].fitBounds(boundsByDay[mostRecentDayWithData]);
+    }
+  }
+}
+
 
     // Process data received from the server
     function processData(data) {
