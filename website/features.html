@@ -26,7 +26,11 @@
   <!-- HLS.js Library -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> 
 
+  <!-- MQTT.js Library -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
   <style>
+    /* Existing styles remain unchanged */
     body {
       font-family: 'Poppins', sans-serif;
       transition: background-color 0.3s, color 0.3s;
@@ -66,11 +70,16 @@
     .btn-primary {
       background-color: #6996f9;
       border: none;
-      transition: background-color 0.3s, transform 0.3s;
+      transition: background-color 0.3s, /* Remove transform transition */
+                 /* Remove transform property to prevent movement */
+                 /* Or set to none if keeping transition */
+                 /* If you want to keep transition for other properties */
+                 background-color 0.3s;
     }
     .btn-primary:hover {
       background-color: #2719e6;
-      transform: translateY(-5px);
+      /* Remove transform to prevent movement */
+      /* transform: translateY(-5px); */
     }
     /* Footer */
     footer {
@@ -195,12 +204,7 @@
 
   <!-- Buzzer Button -->
   <div class="buzzer-container" data-aos="fade-up" data-aos-delay="300">
-    <button id="buzzerButton" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite">Buzzer</button>
-  </div>
-
-  <!-- Audio Element for Buzzer -->
-  <div class="text-center mt-4">
-    <audio id="sound" src="buzzer.mp3" loop></audio>
+    <button id="buzzerButton" class="btn btn-primary btn-lg">Turn Buzzer On</button>
   </div>
 
   <!-- Footer -->
@@ -220,8 +224,6 @@
   <!-- Scripts -->
   <!-- Bootstrap 5 JS Bundle (includes Popper.js) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <!-- HLS.js Library (already included in the head) -->
   
   <!-- AOS (Animate On Scroll) JS -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
@@ -261,22 +263,74 @@
       }
     });
 
-    // Functionality for the buzzer button
-    const soundButton = document.getElementById('buzzerButton');
-    const sound = document.getElementById('sound');
+    // MQTT Configuration
+    const MQTT_BROKER = 'ws://10.0.0.3:9001'; // WebSocket broker address
+    const MQTT_TOPIC_BUZZER = 'collar/buzzer'; // MQTT topic for buzzer control
 
-    soundButton.addEventListener('click', function() {
-      if (sound.paused) {
-        sound.play();
-        soundButton.textContent = 'Stop Buzzer';
-        soundButton.classList.remove('btn-primary');
-        soundButton.classList.add('btn-danger');
+    // Connect to the MQTT broker
+    const client = mqtt.connect(MQTT_BROKER);
+
+    client.on('connect', function () {
+      console.log('Connected to MQTT broker');
+      client.subscribe(MQTT_TOPIC_BUZZER, function (err) {
+        if (err) {
+          console.error('Failed to subscribe to buzzer topic:', err);
+        } else {
+          console.log(`Subscribed to topic: ${MQTT_TOPIC_BUZZER}`);
+        }
+      });
+    });
+
+    client.on('error', function (error) {
+      console.error('Connection failed:', error);
+      alert('Failed to connect to MQTT broker.');
+    });
+
+    // Handle incoming MQTT messages
+    client.on('message', function (topic, message) {
+      if (topic === MQTT_TOPIC_BUZZER) {
+        const state = message.toString().toLowerCase();
+        console.log(`Received message on ${topic}: ${state}`);
+        updateBuzzerButton(state);
+      }
+    });
+
+    // Function to toggle buzzer
+    function toggleBuzzer(state) {
+      client.publish(MQTT_TOPIC_BUZZER, state, { qos: 0 }, function (error) {
+        if (error) {
+          console.error('Publish error:', error);
+          alert('Failed to send command to buzzer.');
+        } else {
+          console.log(`Published "${state}" to topic "${MQTT_TOPIC_BUZZER}"`);
+        }
+      });
+    }
+
+    // Function to update buzzer button based on state
+    function updateBuzzerButton(state) {
+      const buzzerButton = document.getElementById('buzzerButton');
+      if (state === 'on') {
+        buzzerButton.textContent = 'Turn Buzzer Off';
+        buzzerButton.classList.remove('btn-primary');
+        buzzerButton.classList.add('btn-danger');
+      } else if (state === 'off') {
+        buzzerButton.textContent = 'Turn Buzzer On';
+        buzzerButton.classList.remove('btn-danger');
+        buzzerButton.classList.add('btn-primary');
+      }
+    }
+
+    // Handle Buzzer Button Click
+    const buzzerButton = document.getElementById('buzzerButton');
+    let buzzerState = false; // Initially off
+
+    buzzerButton.addEventListener('click', function() {
+      buzzerState = !buzzerState; // Toggle state
+      if (buzzerState) {
+        toggleBuzzer('on');
       } else {
-        sound.pause();
-        sound.currentTime = 0;
-        soundButton.textContent = 'Buzzer';
-        soundButton.classList.remove('btn-danger');
-        soundButton.classList.add('btn-primary');
+        toggleBuzzer('off');
       }
     });
 
