@@ -154,25 +154,54 @@
       opacity: 1;
     }
 
-    /* Dark Mode Styles */
-    body.dark-mode {
-      --background-color: #121212;
-      --text-color: #ffffff;
+   /* Dark Mode Styles */
+   body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
     }
     .dark-mode .navbar {
       background-color: #1f1f1f;
     }
-    .dark-mode .nav-link::after {
-      background: var(--primary-color);
+    .dark-mode .nav-link.active {
+      color: #6996f9;
+    }
+    .dark-mode .navbar-brand,
+    .dark-mode .nav-link {
+      color: #fff ;
     }
     .dark-mode .hero {
-      background-image: url('dog_photo_dark.jpg');
+      background-image: url('dog_photo_dark.png');
     }
     .dark-mode .hero-overlay {
       background: rgba(0,0,0,0.7);
     }
+    .dark-mode .hero h1 {
+      color: #6996f9;
+    }
+    .dark-mode .hero p {
+      color: #ffffff;
+    }
+    .dark-mode .btn-primary {
+      background-color: #6996f9;
+    }
+    .dark-mode .btn-primary:hover {
+      background-color: #2719e6;
+    }
+    .dark-mode .feature-icon {
+      color: #6996f9;
+    }
     .dark-mode footer {
       background-color: #1f1f1f;
+    }
+    .dark-mode footer a {
+      color: #6996f9;
+    }
+    .dark-mode footer a:hover {
+      color: #2719e6;
+    }
+    /* Transition for smooth theme change */
+    body, .navbar, .hero, .btn-primary, footer {
+      transition: background-color 0.3s, color 0.3s;
     }
 
     /* Media Queries */
@@ -199,7 +228,7 @@
       </button>
 
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center">
+        <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#" data-aos="fade-down" data-aos-delay="100">Home</a>
           </li>
