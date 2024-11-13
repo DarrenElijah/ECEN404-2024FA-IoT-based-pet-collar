@@ -5,11 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Meta Tags for SEO -->
+  <meta name="description" content="WatchDog - Real-time pet tracking and safety monitoring.">
+  <meta name="keywords" content="pet tracking, GPS, pet safety, real-time tracking, WatchDog">
+  <meta name="author" content="Team 34">
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
   <!-- Bootstrap 5 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
-  <!-- Custom styles -->
-  <link rel="stylesheet" href="styles.css">
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap">
@@ -17,28 +22,65 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-  <!--ff5722 = 6996f9-->
-  <!--e64a19 = 2719e6-->
+  <!-- AOS (Animate On Scroll) CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css">
+
   <style>
+    :root {
+      --primary-color: #6996f9;
+      --primary-hover: #2719e6;
+      --background-color: #ffffff;
+      --text-color: #000000;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      overflow-x: hidden;
       transition: background-color 0.3s, color 0.3s;
     }
+
+    /* Navbar */
     .navbar-brand {
       font-weight: 700;
     }
-    .nav-link.active {
-      color: #fff;
+    .nav-link {
+      position: relative;
     }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background: var(--primary-color);
+      left: 50%;
+      bottom: -5px;
+      transition: 0.3s;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+      left: 0;
+    }
+
     /* Hero Section */
     .hero {
       position: relative;
-      background-image: url('dog_photo.jpg'); 
+      background-image: url('dog_photo.jpg');
       background-size: cover;
       background-position: center;
       height: 100vh;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-image 0.3s;
     }
     .hero-overlay {
       position: absolute;
@@ -46,103 +88,108 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
+      transition: background 0.3s;
     }
     .hero-content {
       position: relative;
       z-index: 2;
       text-align: center;
-      top: 50%;
-      transform: translateY(-50%);
+      max-width: 80%;
     }
     .hero h1 {
       font-size: 4rem;
       font-weight: 700;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+      animation: fadeInDown 1s;
     }
     .hero p {
       font-size: 1.5rem;
       margin-bottom: 2rem;
+      animation: fadeInUp 1s;
     }
     .btn-primary {
-      background-color: #6996f9;
+      background-color: var(--primary-color);
       border: none;
+      transition: background-color 0.3s, transform 0.3s;
     }
     .btn-primary:hover {
-      background-color: #2719e6;
+      background-color: var(--primary-hover);
+      transform: translateY(-5px);
     }
+
     /* Features Section */
-    .feature-icon {
-      color: #6996f9;
+    .features .feature-icon {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      transition: color 0.3s, transform 0.3s;
     }
+    .features .feature-icon:hover {
+      color: var(--primary-hover);
+      transform: rotate(360deg);
+    }
+
     /* Footer */
     footer {
       background-color: #212529;
       color: #fff;
       padding: 2rem 0;
+      transition: background-color 0.3s;
     }
     footer a {
-      color: #6996f9;
+      color: var(--primary-color);
+      transition: color 0.3s;
     }
     footer a:hover {
-      color: #2719e6;
+      color: var(--primary-hover);
     }
+
+    /* Scroll Animations */
+    [data-aos] {
+      opacity: 0;
+      transition-property: transform, opacity;
+      transition-duration: 1s;
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+    }
+
     /* Dark Mode Styles */
     body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
+      --background-color: #121212;
+      --text-color: #ffffff;
     }
     .dark-mode .navbar {
       background-color: #1f1f1f;
     }
-    .dark-mode .nav-link.active {
-      color: #6996f9;
-    }
-    .dark-mode .navbar-brand,
-    .dark-mode .nav-link {
-      color: #fff ;
+    .dark-mode .nav-link::after {
+      background: var(--primary-color);
     }
     .dark-mode .hero {
-      background-image: url('dog_photo_dark.png');
+      background-image: url('dog_photo_dark.jpg');
     }
     .dark-mode .hero-overlay {
       background: rgba(0,0,0,0.7);
     }
-    .dark-mode .hero h1 {
-      color: #6996f9;
-    }
-    .dark-mode .hero p {
-      color: #ffffff;
-    }
-    .dark-mode .btn-primary {
-      background-color: #6996f9;
-    }
-    .dark-mode .btn-primary:hover {
-      background-color: #2719e6;
-    }
-    .dark-mode .feature-icon {
-      color: #6996f9;
-    }
     .dark-mode footer {
       background-color: #1f1f1f;
     }
-    .dark-mode footer a {
-      color: #6996f9;
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+      }
     }
-    .dark-mode footer a:hover {
-      color: #2719e6;
-    }
-    /* Transition for smooth theme change */
-    body, .navbar, .hero, .btn-primary, footer {
-      transition: background-color 0.3s, color 0.3s;
-    }
-    
   </style>
 </head>
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top animate__animated animate__fadeInDown">
     <div class="container">
       <a class="navbar-brand" href="#">WatchDog</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -152,24 +199,24 @@
       </button>
 
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav align-items-center">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link active" aria-current="page" href="#" data-aos="fade-down" data-aos-delay="100">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="tracking.html">Tracking</a>
+            <a class="nav-link" href="tracking.html" data-aos="fade-down" data-aos-delay="200">Tracking</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="features.html">Features</a>
+            <a class="nav-link" href="features.html" data-aos="fade-down" data-aos-delay="300">Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="refine_safeArea.html">Safe Area</a>
+            <a class="nav-link" href="refine_safeArea.html" data-aos="fade-down" data-aos-delay="400">Safe Area</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="about.html">About</a>
+            <a class="nav-link" href="about.html" data-aos="fade-down" data-aos-delay="500">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacts.html">Contact/Settings</a>
+            <a class="nav-link" href="contacts.html" data-aos="fade-down" data-aos-delay="600">Contact/Settings</a>
           </li>
         </ul>
       </div>
@@ -180,61 +227,74 @@
   <section class="hero">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1>WatchDog</h1>
-      <p>Your pet's safety is our priority</p>
-      <a href="tracking.html" class="btn btn-primary btn-lg">Get Started</a>
+      <h1 class="animate__animated animate__fadeInDown">WatchDog</h1>
+      <p class="animate__animated animate__fadeInUp">Your pet's safety is our priority</p>
+      <a href="tracking.html" class="btn btn-primary btn-lg animate__animated animate__zoomIn">Get Started</a>
     </div>
   </section>
 
   <!-- Features Section -->
-  <div class="container my-5">
-    <div class="row text-center">
-      <div class="col-md-4">
-        <i class="fas fa-map-marker-alt fa-3x mb-3 feature-icon"></i>
-        <h3>Real-Time Tracking</h3>
-        <p>Track your pet's location in real-time with our advanced GPS technology.</p>
-      </div>
-      <div class="col-md-4">
-        <i class="fas fa-shield-alt fa-3x mb-3 feature-icon"></i>
-        <h3>Safe Zones</h3>
-        <p>Set up safe zones and get notified when your pet leaves designated areas.</p>
-      </div>
-      <div class="col-md-4">
-        <i class="fas fa-bell fa-3x mb-3 feature-icon"></i>
-        <h3>Instant Alerts</h3>
-        <p>Receive instant alerts and notifications directly on your mobile device.</p>
+  <section class="features py-5">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <i class="fas fa-map-marker-alt fa-3x feature-icon"></i>
+          <h3>Real-Time Tracking</h3>
+          <p>Track your pet's location in real-time with our advanced GPS technology.</p>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <i class="fas fa-shield-alt fa-3x feature-icon"></i>
+          <h3>Safe Zones</h3>
+          <p>Set up safe zones and get notified when your pet leaves designated areas.</p>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+          <i class="fas fa-bell fa-3x feature-icon"></i>
+          <h3>Instant Alerts</h3>
+          <p>Receive instant alerts and notifications directly on your mobile device.</p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
 
   <!-- Footer -->
   <footer class="text-center">
     <div class="container">
-      <p>© 2024 WatchDog. All rights reserved.</p>
+      <p class="mb-1">© 2024 WatchDog. All rights reserved.</p>
       <p>Made by <a href="#">Team 34</a></p>
       <div>
-        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+        <a href="https://facebook.com/yourpage" class="text-white me-4" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com/yourprofile" class="text-white me-4" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://instagram.com/yourprofile" class="text-white me-4" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://linkedin.com/in/yourprofile" class="text-white me-4" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
       </div>
     </div>
   </footer>
 
   <!-- Scripts -->
   <!-- Bootstrap 5 JS Bundle (includes Popper.js) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Theme Preference Script -->
-  <script>
-    // Check localStorage for theme preference
-    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+  <!-- AOS (Animate On Scroll) JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
-    if (currentTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-    } else if (currentTheme === 'light') {
-      document.body.classList.remove('dark-mode');
-    }
+  <!-- Theme Preference and Animation Script -->
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize AOS
+      AOS.init({
+        once: true,
+        duration: 1000,
+      });
+
+      // Theme Preference Script
+      const currentTheme = localStorage.getItem('theme');
+
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      // No theme toggle button present on this page
+    });
   </script>
 
 </body>

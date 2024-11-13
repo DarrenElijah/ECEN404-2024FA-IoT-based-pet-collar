@@ -7,15 +7,21 @@
 
   <!-- Bootstrap 5 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
+  
   <!-- Custom styles -->
   <link rel="stylesheet" href="styles.css">
-
+  
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap">
-
+  
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  
+  <!-- AOS (Animate On Scroll) CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
 
   <!-- Include Turf.js for geospatial operations -->
   <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
@@ -64,18 +70,22 @@
     .btn-primary {
       background-color: #6996f9;
       border: none;
+      transition: background-color 0.3s, transform 0.3s;
     }
     .btn-primary:hover {
       background-color: #2719e6;
+      transform: translateY(-5px);
     }
     /* Footer */
     footer {
       background-color: #212529;
       color: #fff;
       padding: 2rem 0;
+      transition: background-color 0.3s;
     }
     footer a {
       color: #6996f9;
+      transition: color 0.3s;
     }
     footer a:hover {
       color: #2719e6;
@@ -93,6 +103,7 @@
     }
     .dark-mode .navbar {
       background-color: #1f1f1f;
+      transition: background-color 0.3s;
     }
     .dark-mode .nav-link.active {
       color: #6996f9;
@@ -187,7 +198,7 @@
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top animate__animated animate__fadeInDown" data-aos="fade-down" data-aos-delay="100">
     <div class="container">
       <a class="navbar-brand" href="#">WatchDog</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -200,67 +211,67 @@
         <ul class="navbar-nav">
           <!-- Update the links as per your website structure -->
           <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="index.html" data-aos="fade-down" data-aos-delay="100">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="tracking.html">Tracking</a>
+            <a class="nav-link" href="tracking.html" data-aos="fade-down" data-aos-delay="200">Tracking</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="features.html">Features</a>
+            <a class="nav-link" href="features.html" data-aos="fade-down" data-aos-delay="300">Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#">Safe Area</a>
+            <a class="nav-link active" href="#" data-aos="fade-down" data-aos-delay="400">Safe Area</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="about.html">About</a>
+            <a class="nav-link" href="about.html" data-aos="fade-down" data-aos-delay="500">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacts.html">Contact/Settings</a>
+            <a class="nav-link" href="contacts.html" data-aos="fade-down" data-aos-delay="600">Contact/Settings</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-<!-- Main content -->
-<div class="container-fluid main-content mt-5 pt-5">
-  <div class="row">
-    <div class="col-md-6 offset-md-3 text-center">
-      <h1 class="display-4">Refine Safe Area</h1>
-      <p class="text-muted">
-        Use this page to view and refine geofences based on your pet’s movements throughout the week.
-        The system analyzes location data per day, showing individual safe areas and a combined,
-        refined area for the entire week. This helps create a more accurate safe zone for your pet.
-      </p>
-      
-      <!-- Show Instructions Button -->
-      <button class="btn btn-primary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse" id="toggleInstructionsBtn">
-        Show Instructions
-      </button>
-      
-      <!-- Instructions Content -->
-      <div class="collapse mt-3" id="instructionsCollapse">
-        <div class="card card-body" id="instructions">
-          <h5>Instructions:</h5>
-          <ul>
-            <li>Click on each day tab to view your pet’s safe area for that specific day.</li>
-            <li>If the tab is grayed out, the tab has yet to collect data for that day.</li>
-            <li>The Refined Safe Area combines all daily safe zones for a comprehensive view of the week.</li>
-            <li>To update your safe areas, ensure your pet's tracker is active and data is being collected.</li>
-            <li>Use the map controls to zoom in/out and navigate around the safe areas.</li>
-          </ul>
+  <!-- Main content -->
+  <div class="container-fluid main-content mt-5 pt-5" data-aos="fade-up" data-aos-delay="100">
+    <div class="row">
+      <div class="col-md-6 offset-md-3 text-center">
+        <h1 class="display-4" data-aos="fade-up" data-aos-delay="200">Refine Safe Area</h1>
+        <p class="text-muted" data-aos="fade-up" data-aos-delay="300">
+          Use this page to view and refine geofences based on your pet’s movements throughout the week.
+          The system analyzes location data per day, showing individual safe areas and a combined,
+          refined area for the entire week. This helps create a more accurate safe zone for your pet.
+        </p>
+        
+        <!-- Show Instructions Button -->
+        <button class="btn btn-primary mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#instructionsCollapse" aria-expanded="false" aria-controls="instructionsCollapse" id="toggleInstructionsBtn" data-aos="fade-up" data-aos-delay="400">
+          Show Instructions
+        </button>
+        
+        <!-- Instructions Content -->
+        <div class="collapse mt-3" id="instructionsCollapse" data-aos="fade-up" data-aos-delay="500">
+          <div class="card card-body" id="instructions">
+            <h5>Instructions:</h5>
+            <ul>
+              <li>Click on each day tab to view your pet’s safe area for that specific day.</li>
+              <li>If the tab is grayed out, the tab has yet to collect data for that day.</li>
+              <li>The Refined Safe Area combines all daily safe zones for a comprehensive view of the week.</li>
+              <li>To update your safe areas, ensure your pet's tracker is active and data is being collected.</li>
+              <li>Use the map controls to zoom in/out and navigate around the safe areas.</li>
+            </ul>
+          </div>
         </div>
+        
       </div>
-      
     </div>
   </div>
-</div>
 
 
   <!-- Tabs for days of the week -->
   <div class="container-fluid mt-4">
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs justify-content-center" id="dayTabs" role="tablist">
+    <ul class="nav nav-tabs justify-content-center" id="dayTabs" role="tablist" data-aos="fade-up" data-aos-delay="600">
       <!-- Tabs will be generated dynamically -->
     </ul>
     <!-- Tab panes -->
@@ -270,15 +281,15 @@
   </div>
 
   <!-- Footer -->
-  <footer class="text-center mt-5">
+  <footer class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
     <div class="container">
       <p>© 2024 WatchDog. All rights reserved.</p>
       <p>Made by <a href="#">Team 34</a></p>
       <div>
-        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white me-4" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
       </div>
     </div>
   </footer>
@@ -290,8 +301,17 @@
   <!-- Include Google Maps API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDabNS8338DeJ3yXMJO5GPZk1cyR3FKOV4&libraries=places&callback=initMap" async defer></script>
 
+  <!-- AOS (Animate On Scroll) JS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  
   <!-- Your JavaScript code -->
   <script>
+    // Initialize AOS
+    AOS.init({
+      once: true,
+      duration: 1000,
+    });
+
     // Initialize variables
     var maps = {};
     var polygons = {};
@@ -305,52 +325,50 @@
                       'Thursday', 'Friday', 'Saturday', 'RefinedArea'];
 
     // Function to fetch data from the server and update maps
- // Function to fetch data from the server and update maps
-function fetchDataAndUpdateMaps() {
-  fetch('/api/data')  // Assume you have an API endpoint to fetch data
-    .then(response => response.json())
-    .then(data => {
-      processData(data);
+    function fetchDataAndUpdateMaps() {
+      fetch('/api/data')  // Assume you have an API endpoint to fetch data
+        .then(response => response.json())
+        .then(data => {
+          processData(data);
 
-      // After processing, focus on the most recent tab with data
-      focusOnMostRecentTabWithData();
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-}
-
-// Function to focus on the most recent tab with data
-function focusOnMostRecentTabWithData() {
-  // Days are in order from Sunday (0) to RefinedArea (7)
-  let mostRecentDayWithData = null;
-
-  // Find the most recent day with data
-  for (let i = daysOfWeek.length - 2; i >= 0; i--) {  // Exclude RefinedArea
-    const day = daysOfWeek[i];
-    if (dataByDay[day] && dataByDay[day].length > 0) {
-      mostRecentDayWithData = day;
-      break;
+          // After processing, focus on the most recent tab with data
+          focusOnMostRecentTabWithData();
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
     }
-  }
 
-  // If a recent day with data was found, activate its tab
-  if (mostRecentDayWithData) {
-    const tabLink = document.getElementById(mostRecentDayWithData + '-tab');
-    const tabContent = document.getElementById(mostRecentDayWithData);
+    // Function to focus on the most recent tab with data
+    function focusOnMostRecentTabWithData() {
+      // Days are in order from Sunday (0) to RefinedArea (7)
+      let mostRecentDayWithData = null;
 
-    // Use Bootstrap's JavaScript method to show the tab
-    const bootstrapTab = new bootstrap.Tab(tabLink);
-    bootstrapTab.show();
+      // Find the most recent day with data
+      for (let i = daysOfWeek.length - 2; i >= 0; i--) {  // Exclude RefinedArea
+        const day = daysOfWeek[i];
+        if (dataByDay[day] && dataByDay[day].length > 0) {
+          mostRecentDayWithData = day;
+          break;
+        }
+      }
 
-    // Fit the map to the bounds if available
-    if (boundsByDay[mostRecentDayWithData]) {
-      google.maps.event.trigger(maps[mostRecentDayWithData], 'resize');
-      maps[mostRecentDayWithData].fitBounds(boundsByDay[mostRecentDayWithData]);
+      // If a recent day with data was found, activate its tab
+      if (mostRecentDayWithData) {
+        const tabLink = document.getElementById(mostRecentDayWithData + '-tab');
+        const tabContent = document.getElementById(mostRecentDayWithData);
+
+        // Use Bootstrap's JavaScript method to show the tab
+        const bootstrapTab = new bootstrap.Tab(tabLink);
+        bootstrapTab.show();
+
+        // Fit the map to the bounds if available
+        if (boundsByDay[mostRecentDayWithData]) {
+          google.maps.event.trigger(maps[mostRecentDayWithData], 'resize');
+          maps[mostRecentDayWithData].fitBounds(boundsByDay[mostRecentDayWithData]);
+        }
+      }
     }
-  }
-}
-
 
     // Process data received from the server
     function processData(data) {
@@ -761,6 +779,8 @@ function focusOnMostRecentTabWithData() {
             tabLink.setAttribute('aria-controls', day);
             tabLink.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
             tabLink.innerText = day === 'RefinedArea' ? 'Refined Safe Area' : day;
+            tabLink.setAttribute('data-aos', 'fade-up');
+            tabLink.setAttribute('data-aos-delay', 100 + index * 100); // Incremental delay
             tab.appendChild(tabLink);
             tabsContainer.appendChild(tab);
 
@@ -771,11 +791,15 @@ function focusOnMostRecentTabWithData() {
             tabPane.id = day;
             tabPane.role = 'tabpanel';
             tabPane.setAttribute('aria-labelledby', day + '-tab');
+            tabPane.setAttribute('data-aos', 'fade-up');
+            tabPane.setAttribute('data-aos-delay', 200 + index * 100); // Incremental delay
 
             // Add heading to tab content
             var heading = document.createElement('h3');
             heading.innerText = day === 'RefinedArea' ?
                                 'Refined Safe Area for the Week' : day;
+            heading.setAttribute('data-aos', 'fade-up');
+            heading.setAttribute('data-aos-delay', 300 + index * 100); // Incremental delay
             tabPane.appendChild(heading);
 
             var mapDiv = document.createElement('div');
@@ -839,13 +863,16 @@ function focusOnMostRecentTabWithData() {
 
     instructionsCollapse.addEventListener('show.bs.collapse', function () {
       toggleInstructionsBtn.textContent = 'Hide Instructions';
+      toggleInstructionsBtn.setAttribute('data-aos', 'fade-up');
+      toggleInstructionsBtn.setAttribute('data-aos-delay', '600');
     });
 
     instructionsCollapse.addEventListener('hide.bs.collapse', function () {
       toggleInstructionsBtn.textContent = 'Show Instructions';
+      toggleInstructionsBtn.setAttribute('data-aos', 'fade-up');
+      toggleInstructionsBtn.setAttribute('data-aos-delay', '600');
     });
-
-</script>
+  </script>
 
 </body>
 </html>

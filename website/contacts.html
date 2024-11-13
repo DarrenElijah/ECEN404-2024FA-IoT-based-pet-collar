@@ -17,6 +17,12 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  
+  <!-- AOS (Animate On Scroll) CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
+  
   <style>
     /* Existing Styles */
     body {
@@ -58,9 +64,11 @@
       background-color: #212529;
       color: #fff;
       padding: 2rem 0;
+      transition: background-color 0.3s;
     }
     footer a {
       color: #6996f9;
+      transition: color 0.3s;
     }
     footer a:hover {
       color: #2719e6;
@@ -72,6 +80,7 @@
     }
     .dark-mode .navbar {
       background-color: #1f1f1f;
+      transition: background-color 0.3s;
     }
     .dark-mode .nav-link.active {
       color: #6996f9;
@@ -83,11 +92,8 @@
     .dark-mode h1 {
       color: #6996f9;
     }
-    .dark-mode .contact-info a {
-      color: #6996f9;
-    }
-    .dark-mode .contact-info a:hover {
-      color: #2719e6;
+    .dark-mode p {
+      color: #ffffff;
     }
     .dark-mode footer {
       background-color: #1f1f1f;
@@ -105,9 +111,11 @@
     .btn-primary {
       background-color: #6996f9;
       border: none;
+      transition: background-color 0.3s, transform 0.3s;
     }
     .btn-primary:hover {
       background-color: #2719e6;
+      transform: translateY(-5px);
     }
     .dark-mode .btn-primary {
       background-color: #6996f9;
@@ -166,7 +174,7 @@
 <body>
   
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top animate__animated animate__fadeInDown" data-aos="fade-down" data-aos-delay="100">
     <div class="container">
       <a class="navbar-brand" href="#">WatchDog</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -179,22 +187,22 @@
         <ul class="navbar-nav">
           <!-- Update the links as per your website structure -->
           <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="index.html" data-aos="fade-down" data-aos-delay="100">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="tracking.html">Tracking</a>
+            <a class="nav-link" href="tracking.html" data-aos="fade-down" data-aos-delay="200">Tracking</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="features.html">Features</a>
+            <a class="nav-link" href="features.html" data-aos="fade-down" data-aos-delay="300">Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="refine_safeArea.html">Safe Area</a>
+            <a class="nav-link" href="refine_safeArea.html" data-aos="fade-down" data-aos-delay="400">Safe Area</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="about.html">About</a>
+            <a class="nav-link" href="about.html" data-aos="fade-down" data-aos-delay="500">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#">Contact/Settings</a>
+            <a class="nav-link active" href="#" data-aos="fade-down" data-aos-delay="600">Contact/Settings</a>
           </li>
         </ul>
       </div>
@@ -205,11 +213,11 @@
   <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header"> <!-- Modal Header -->
+        <div class="modal-header" data-aos="fade-up" data-aos-delay="100"> <!-- Modal Header -->
           <h5 class="modal-title" id="editEmailModalLabel">Edit Your Email</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body"> <!-- Modal Body -->
+        <div class="modal-body" data-aos="fade-up" data-aos-delay="200"> <!-- Modal Body -->
           <form id="editEmailForm">
             <div class="mb-3">
               <label for="newEmailInput" class="form-label">New Email Address</label>
@@ -221,9 +229,9 @@
             </div>
           </form>
         </div>
-        <div class="modal-footer"> <!-- Modal Footer -->
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveNewEmailBtn">Save</button>
+        <div class="modal-footer" data-aos="fade-up" data-aos-delay="300"> <!-- Modal Footer -->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-aos="fade-up" data-aos-delay="400">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveNewEmailBtn" data-aos="fade-up" data-aos-delay="500">Save</button>
         </div>
       </div>
     </div>
@@ -233,11 +241,11 @@
   <div class="modal fade" id="contactSupportModal" tabindex="-1" aria-labelledby="contactSupportModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header"> <!-- Modal Header -->
+        <div class="modal-header" data-aos="fade-up" data-aos-delay="100"> <!-- Modal Header -->
           <h5 class="modal-title" id="contactSupportModalLabel">Contact Support</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body"> <!-- Modal Body -->
+        <div class="modal-body" data-aos="fade-up" data-aos-delay="200"> <!-- Modal Body -->
           <form id="contactSupportForm">
             <div class="mb-3">
               <label for="supportName" class="form-label">Name</label>
@@ -262,43 +270,43 @@
             </div>
           </form>
         </div>
-        <div class="modal-footer"> <!-- Modal Footer -->
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="sendSupportMessageBtn">Send Message</button>
+        <div class="modal-footer" data-aos="fade-up" data-aos-delay="300"> <!-- Modal Footer -->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-aos="fade-up" data-aos-delay="400">Cancel</button>
+          <button type="button" class="btn btn-primary" id="sendSupportMessageBtn" data-aos="fade-up" data-aos-delay="500">Send Message</button>
         </div>
       </div>
     </div>
   </div>
   
   <!-- Main content -->
-  <div class="container-fluid main-content mt-5 pt-5">
+  <div class="container-fluid main-content mt-5 pt-5" data-aos="fade-up" data-aos-delay="100">
     <div class="row">
       <div class="col-md-8 offset-md-2 text-center">
-        <h1 class="display-4">Contacts/Settings</h1>
-        <div class="contact-info mt-4">
+        <h1 class="display-4" data-aos="fade-up" data-aos-delay="200">Contacts/Settings</h1>
+        <div class="contact-info mt-4" data-aos="fade-up" data-aos-delay="300">
           <p><strong>Darren Lefever</strong>: <a href="mailto:darren.elijah19@tamu.edu">darren.elijah19@tamu.edu</a></p>
           <p><strong>Max Kotas</strong>: <a href="mailto:maxtkotas@tamu.edu">maxtkotas@tamu.edu</a></p>
           <p><strong>Timothy Thompson</strong>: <a href="mailto:timothythompson@tamu.edu">timothythompson@tamu.edu</a></p>
         </div>
         
         <!-- User Email Display Section -->
-        <div class="user-email mt-4">
+        <div class="user-email mt-4" data-aos="fade-up" data-aos-delay="400">
           <h5>Your Email:</h5>
           <p id="displayUserEmail">Not set</p>
-          <div class="edit-email-group">
-            <button class="btn btn-primary" id="editEmailBtn"><i class="fas fa-edit"></i> Edit Email</button>
+          <div class="edit-email-group" data-aos="fade-up" data-aos-delay="500">
+            <button class="btn btn-primary" id="editEmailBtn" data-aos="fade-up" data-aos-delay="600"><i class="fas fa-edit"></i> Edit Email</button>
           </div>
         </div>
 
         <!-- Button Group for Dark Mode and Contact Support -->
-        <div class="button-group">
+        <div class="button-group" data-aos="fade-up" data-aos-delay="700">
           <!-- Theme Toggle Button -->
-          <button id="theme-toggle" class="btn btn-primary">
+          <button id="theme-toggle" class="btn btn-primary" data-aos="fade-up" data-aos-delay="800">
             <i class="fas fa-moon"></i> Dark Mode
           </button>
 
           <!-- Contact Support Button -->
-          <button class="btn btn-primary" id="contactSupportBtn"><i class="fas fa-headset"></i> Contact Support</button>
+          <button class="btn btn-primary" id="contactSupportBtn" data-aos="fade-up" data-aos-delay="900"><i class="fas fa-headset"></i> Contact Support</button>
         </div>
         
       </div>
@@ -306,15 +314,15 @@
   </div>
   
   <!-- Footer -->
-  <footer class="text-center mt-5">
+  <footer class="text-center mt-5" data-aos="fade-up" data-aos-delay="1000">
     <div class="container">
       <p>© 2024 WatchDog. All rights reserved.</p>
       <p>Made by <a href="#">Team 34</a></p>
       <div>
-        <a href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-white me-4"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-4" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white me-4" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
       </div>
     </div>
   </footer>
@@ -334,8 +342,17 @@
   <!-- Include jQuery (optional, if your code uses it) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
+  <!-- AOS (Animate On Scroll) JS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  
   <!-- Your JavaScript code -->
   <script>
+    // Initialize AOS
+    AOS.init({
+      once: true,
+      duration: 1000,
+    });
+
     // Initialize EmailJS with your Public Key
     (function(){
       emailjs.init("ThoIMOAUBoInaFUOg"); // Replace with your EmailJS Public Key
