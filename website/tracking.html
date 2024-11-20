@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <script src="auth.js"></script>
   <!-- Bootstrap 5 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
@@ -163,13 +164,13 @@
       border-color: #2719e6;
     }
     .dark-mode .btn-outline-danger {
-      color: #6996f9;
-      border-color: #6996f9;
+      color: #f56969;
+      border-color: #f56969;
     }
     .dark-mode .btn-outline-danger:hover {
-      background-color: #2719e6;
+      background-color: #e63946;
       color: #ffffff;
-      border-color: #2719e6;
+      border-color: #e63946;
     }
     /* Instructions Section */
     #instructions {
@@ -320,14 +321,14 @@
               <input type="text" class="form-control" id="geofenceNameInput" placeholder="Enter a name for this geofence and click 'Save'" required>
               <!-- Error message container -->
               <div id="geofenceNameError" class="invalid-feedback">
-                This name is already in use. Please choose a different name.
+                Please enter a name for the geofence.
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer"> <!-- Modal Footer -->
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveGeofenceBtn">Save</button>
+          <button type="button" class="btn btn-primary" id="saveGeofenceBtn">Save Geofence</button>
         </div>
       </div>
     </div>
@@ -335,7 +336,7 @@
 
   <!-- Saved Geofences Modal -->
   <div class="modal fade" id="savedGeofencesModal" tabindex="-1" aria-labelledby="savedGeofencesModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header"> <!-- Modal Header -->
           <h5 class="modal-title" id="savedGeofencesModalLabel">Saved Geofences</h5>
@@ -346,6 +347,25 @@
         </div>
         <div class="modal-footer"> <!-- Modal Footer -->
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deletion Confirmation Modal -->
+  <div class="modal fade" id="deleteGeofenceModal" tabindex="-1" aria-labelledby="deleteGeofenceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white"> <!-- Modal Header with danger styling -->
+          <h5 class="modal-title" id="deleteGeofenceModalLabel">Delete Geofence</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body"> <!-- Modal Body -->
+          Are you sure you want to delete the geofence "<span id="geofenceToDeleteName"></span>"? This action cannot be undone.
+        </div>
+        <div class="modal-footer"> <!-- Modal Footer -->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteGeofenceBtn">Delete</button>
         </div>
       </div>
     </div>
@@ -384,7 +404,6 @@
   <!-- AOS (Animate On Scroll) JS --> <!-- Added AOS JS -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
-  <!-- Your JavaScript code -->
   <script>
     // Initialize EmailJS with your Public Key
     (function(){
@@ -394,11 +413,15 @@
     let map;
     let trackingMarker;
     let previousInsideGeofence = null;
-    let tempPolygon; // Added for geofence name modal
+    let currentAppliedGeofenceId = null; // Track the currently applied geofence ID
 
-    // New variables for smooth animation
+    // Variables for smooth animation
     let animationInterval;
     const animationDuration = 1000; // Duration of the animation in milliseconds
+
+    // Variables to store the geofence to be deleted
+    let geofenceToDeleteId = null;
+    let geofenceToDeleteName = '';
 
     function initMap() {
       // Initialize the map
@@ -431,12 +454,8 @@
 
       drawingManager.setMap(map);
 
-      // Load current geofence from localStorage and apply it
-      const currentGeofenceData = localStorage.getItem('currentGeofence');
-      if (currentGeofenceData) {
-        const currentGeofence = JSON.parse(currentGeofenceData);
-        applyGeofence(currentGeofence);
-      }
+      // Load and apply the current geofence from localStorage
+      applyCurrentGeofenceFromLocalStorage();
 
       // Event listener for when the user completes drawing a polygon
       google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
@@ -446,9 +465,6 @@
         window.polygon = polygon;
         drawingManager.setDrawingMode(null);
 
-        // Store the polygon in a temporary variable
-        tempPolygon = polygon;
-
         // Open the geofence name modal
         var geofenceNameModal = new bootstrap.Modal(document.getElementById('geofenceNameModal'));
         geofenceNameModal.show();
@@ -456,64 +472,78 @@
       });
 
       // Event listener for the Save button in the geofence name modal
-      document.getElementById('saveGeofenceBtn').addEventListener('click', function() {
-        const geofenceNameInput = document.getElementById('geofenceNameInput');
-        const geofenceName = geofenceNameInput.value.trim();
-        const geofenceNameError = document.getElementById('geofenceNameError');
+// Event listener for the Save button in the geofence name modal
+document.getElementById('saveGeofenceBtn').addEventListener('click', async function() {
+  const geofenceNameInput = document.getElementById('geofenceNameInput');
+  const geofenceName = geofenceNameInput.value.trim();
+  const geofenceNameError = document.getElementById('geofenceNameError');
 
-        if (geofenceName) {
-          // Retrieve saved geofences
-          const savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
-          // Check if the name already exists
-          const nameExists = savedGeofences.some(g => g.name.toLowerCase() === geofenceName.toLowerCase());
+  if (geofenceName) {
+    // Remove any previous error messages
+    geofenceNameInput.classList.remove('is-invalid');
+    geofenceNameError.style.display = 'none';
 
-          if (nameExists) {
-            // Show error message
-            geofenceNameInput.classList.add('is-invalid');
-            geofenceNameError.style.display = 'block';
-            geofenceNameError.textContent = 'This name is already in use. Please choose a different name.';
-            console.log("Geofence name already exists:", geofenceName);
-          } else {
-            // Remove any previous error messages
-            geofenceNameInput.classList.remove('is-invalid');
-            geofenceNameError.style.display = 'none';
-
-            window.polygon.geofenceName = geofenceName;
-            // Get the city name and save the geofence
-            getCityNameAndSaveGeofence(window.polygon, geofenceName);
-
-            // Close the modal
-            var geofenceNameModalEl = document.getElementById('geofenceNameModal');
-            var geofenceNameModal = bootstrap.Modal.getInstance(geofenceNameModalEl);
-            geofenceNameModal.hide();
-            console.log("Geofence saved with name:", geofenceName);
-
-            // Clear the input and error message
-            geofenceNameInput.value = '';
-            geofenceNameError.style.display = 'none';
-
-            // Update saved geofence when edited
-            window.polygon.getPath().addListener('set_at', () => {
-              console.log("Geofence path updated via 'set_at'");
-              getCityNameAndSaveGeofence(window.polygon, geofenceName);
-            });
-            window.polygon.getPath().addListener('insert_at', () => {
-              console.log("Geofence path updated via 'insert_at'");
-              getCityNameAndSaveGeofence(window.polygon, geofenceName);
-            });
-            window.polygon.getPath().addListener('remove_at', () => {
-              console.log("Geofence path updated via 'remove_at'");
-              getCityNameAndSaveGeofence(window.polygon, geofenceName);
-            });
-          }
-        } else {
-          // If the input is empty, show a required field error
-          geofenceNameInput.classList.add('is-invalid');
-          geofenceNameError.style.display = 'block';
-          geofenceNameError.textContent = 'Please enter a name for the geofence.';
-          console.log("Geofence name input is empty.");
-        }
+    // Get the polygon coordinates
+    const path = window.polygon.getPath();
+    const coordinates = [];
+    for (let i = 0; i < path.getLength(); i++) {
+      coordinates.push({
+        lat: path.getAt(i).lat(),
+        lng: path.getAt(i).lng()
       });
+    }
+
+    // Use the first coordinate for reverse geocoding
+    const firstCoordinate = coordinates[0];
+    const geocoder = new google.maps.Geocoder();
+    const latlng = new google.maps.LatLng(firstCoordinate.lat, firstCoordinate.lng);
+
+    geocoder.geocode({ location: latlng }, async function(results, status) {
+      if (status === 'OK') {
+        let city = '';
+        if (results[0]) {
+          for (const component of results[0].address_components) {
+            if (component.types.includes('locality')) {
+              city = component.long_name;
+              break;
+            }
+          }
+        }
+        // Save the geofence to the server
+        const success = await saveGeofence(geofenceName, coordinates, city);
+        console.log("Geofence city determined as:", city);
+
+        if (success) {
+          // Close the modal
+          var geofenceNameModal = bootstrap.Modal.getInstance(document.getElementById('geofenceNameModal'));
+          if (geofenceNameModal) {
+            geofenceNameModal.hide();
+            console.log("Save Geofence Modal closed after successful save.");
+          }
+        }
+      } else {
+        console.error('Geocoder failed due to:', status);
+        // Save the geofence with 'Unknown City' if geocoding fails
+        const success = await saveGeofence(geofenceName, coordinates, 'Unknown City');
+        if (success) {
+          // Close the modal
+          var geofenceNameModal = bootstrap.Modal.getInstance(document.getElementById('geofenceNameModal'));
+          if (geofenceNameModal) {
+            geofenceNameModal.hide();
+            console.log("Save Geofence Modal closed after successful save.");
+          }
+        }
+      }
+    });
+  } else {
+    // If the input is empty, show a required field error
+    geofenceNameInput.classList.add('is-invalid');
+    geofenceNameError.style.display = 'block';
+    geofenceNameError.textContent = 'Please enter a name for the geofence.';
+    console.log("Geofence name input is empty.");
+  }
+});
+
 
       // Event listener for modal close to handle cancellation
       document.getElementById('geofenceNameModal').addEventListener('hidden.bs.modal', function (event) {
@@ -525,16 +555,15 @@
         geofenceNameError.style.display = 'none';
 
         if (!window.polygon.geofenceName) {
-          tempPolygon.setMap(null);
+          window.polygon.setMap(null);
           window.polygon = null;
-          tempPolygon = null;
           console.log("Geofence creation canceled. Polygon removed.");
         }
       });
 
       startSocketIO();
 
-      // **Updated Toggle Instructions Button Listener**
+      // Toggle Instructions Button Listener
       var instructionsCollapse = document.getElementById('instructionsCollapse');
       var toggleInstructionsBtn = document.getElementById('toggleInstructionsBtn');
 
@@ -550,11 +579,15 @@
 
       // Load saved geofences when the modal is opened
       document.getElementById('savedGeofencesModal').addEventListener('show.bs.modal', function (event) {
-        loadSavedCustomGeofences();
+        loadGeofencesFromServer().then(() => {
+          // After loading geofences, check for currently applied geofence
+          applyCurrentGeofenceFromLocalStorage();
+        });
         console.log("Saved Geofences Modal opened.");
       });
     }
 
+    // Function to create a geofence based on address input
     function createGeofence() {
       const address = document.getElementById('addressInput').value;
       const geocoder = new google.maps.Geocoder();
@@ -574,84 +607,93 @@
       });
     }
 
-    function getCityNameAndSaveGeofence(polygon, geofenceName) {
-      const path = polygon.getPath();
-      const coordinates = [];
-      for (let i = 0; i < path.getLength(); i++) {
-        coordinates.push({
-          lat: path.getAt(i).lat(),
-          lng: path.getAt(i).lng()
-        });
-      }
+// Function to save geofence to the server
+async function saveGeofence(geofenceName, coordinates, city) {
+  try {
+    const response = await fetch('/api/geofences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies for session
+      body: JSON.stringify({ name: geofenceName, coordinates, city }),
+    });
 
-      // Use the first coordinate for reverse geocoding
-      const firstCoordinate = coordinates[0];
-      const geocoder = new google.maps.Geocoder();
-      const latlng = new google.maps.LatLng(firstCoordinate.lat, firstCoordinate.lng);
-
-      geocoder.geocode({ location: latlng }, function(results, status) {
-        if (status === 'OK') {
-          let city = '';
-          if (results[0]) {
-            for (const component of results[0].address_components) {
-              if (component.types.includes('locality')) {
-                city = component.long_name;
-                break;
-              }
-            }
-          }
-          saveCustomGeofence(geofenceName, coordinates, city);
-          console.log("Geofence city determined as:", city);
-        } else {
-          console.error('Geocoder failed due to:', status);
-          saveCustomGeofence(geofenceName, coordinates, 'Unknown City');
-        }
-      });
+    let result = {};
+    try {
+      result = await response.json();
+    } catch (e) {
+      console.warn('No JSON response body:', e);
     }
 
-    // Helper function to set current geofence
+    console.log("Save Geofence Response:", response.status, result);
+
+    if (response.status === 201) {
+      showToast(result.message, 'success');
+      window.polygon.geofenceName = geofenceName;
+      setCurrentGeofence({ _id: result.geofenceId || result.id, name: geofenceName, coordinates, city }); // Handle both '_id' and 'id'
+      loadGeofencesFromServer();
+      return true; // Indicate success
+    } else {
+      showToast(result.message || 'Failed to save geofence.', 'error');
+      console.error('Failed to save geofence:', result);
+      return false; // Indicate failure
+    }
+  } catch (error) {
+    console.error('Error saving geofence:', error);
+    showToast('An error occurred while saving the geofence.', 'error');
+    return false; // Indicate failure
+  }
+}
+
+    // Function to set the current geofence
     function setCurrentGeofence(geofence) {
-      localStorage.setItem('currentGeofence', JSON.stringify(geofence));
-      console.log("Current geofence set:", geofence);
-    }
-
-    function saveCustomGeofence(geofenceName, coordinates, city) {
-      let savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
-
-      // Check if a geofence with the same name exists
-      const existingIndex = savedGeofences.findIndex(g => g.name.toLowerCase() === geofenceName.toLowerCase());
-      if (existingIndex !== -1) {
-        console.warn("Geofence with name", geofenceName, "already exists.");
-        // Optionally, update the existing geofence instead of adding a new one
-        savedGeofences[existingIndex] = { name: geofenceName, coordinates: coordinates, city: city };
+      currentAppliedGeofenceId = geofence._id || geofence.id; // Support both '_id' and 'id'
+      if (currentAppliedGeofenceId) {
+        localStorage.setItem('currentAppliedGeofenceId', currentAppliedGeofenceId);
+        console.log("Current geofence set:", geofence);
       } else {
-        // Add new geofence
-        savedGeofences.push({ name: geofenceName, coordinates: coordinates, city: city });
-        console.log("New geofence added:", geofenceName);
+        console.error("Geofence ID is undefined when setting current geofence:", geofence);
       }
-
-      localStorage.setItem('savedGeofences', JSON.stringify(savedGeofences));
-      console.log("Saved geofences updated.");
-
-      // Set as current geofence
-      setCurrentGeofence({ name: geofenceName, coordinates: coordinates, city: city });
-
-      // Refresh the saved geofences list
-      loadSavedCustomGeofences();
     }
 
-    function loadSavedCustomGeofences() {
-      const savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
+    // Function to load geofences from the server
+    async function loadGeofencesFromServer() {
+      try {
+        const response = await fetch('/api/geofences', {
+          method: 'GET',
+          credentials: 'include', // Include cookies for session
+        });
+
+        if (response.status === 200) {
+          const geofences = await response.json();
+          populateSavedGeofencesList(geofences);
+          console.log("Saved geofences loaded from server.");
+        } else {
+          const errorResult = await response.json();
+          showToast('Failed to load geofences.', 'error');
+          console.error('Failed to load geofences:', errorResult);
+        }
+      } catch (error) {
+        console.error('Error fetching geofences:', error);
+        showToast('An error occurred while fetching geofences.', 'error');
+      }
+    }
+
+    // Function to populate the saved geofences list in the modal
+    function populateSavedGeofencesList(geofences) {
       const savedGeofencesList = document.getElementById('savedGeofencesList');
       savedGeofencesList.innerHTML = '';
 
-      if (savedGeofences.length === 0) {
+      if (geofences.length === 0) {
         savedGeofencesList.innerHTML = '<p class="text-muted">No saved geofences.</p>';
         console.log("No saved geofences to display.");
         return;
       }
 
-      savedGeofences.forEach((geofence) => {
+      geofences.forEach((geofence) => {
+        console.log("Processing geofence:", geofence); // Log each geofence object
+
         const geofenceItem = document.createElement('li');
         geofenceItem.className = 'list-group-item d-flex justify-content-between align-items-center';
 
@@ -678,7 +720,24 @@
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.className = 'btn btn-sm btn-outline-danger';
-        deleteButton.onclick = () => deleteGeofence(geofence.name);
+        deleteButton.onclick = () => {
+          const geofenceId = geofence._id || geofence.id; // Support both '_id' and 'id'
+          const geofenceName = geofence.name || 'Unnamed Geofence';
+          if (geofenceId) {
+            // Set the global variables to be used when confirming deletion
+            geofenceToDeleteId = geofenceId;
+            geofenceToDeleteName = geofenceName;
+            // Update the modal content
+            document.getElementById('geofenceToDeleteName').textContent = geofenceName;
+            // Show the deletion confirmation modal
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteGeofenceModal'));
+            deleteModal.show();
+            console.log(`Deletion modal opened for geofence: ${geofenceName} (ID: ${geofenceId})`);
+          } else {
+            console.error('Geofence ID is undefined:', geofence);
+            showToast('Cannot delete geofence because its ID is undefined.', 'error');
+          }
+        };
 
         buttonGroup.appendChild(applyButton);
         buttonGroup.appendChild(deleteButton);
@@ -691,66 +750,182 @@
       console.log("Saved geofences loaded into the list.");
     }
 
-    function applyGeofence(geofence) {
-      if (window.polygon) {
-        window.polygon.setMap(null);
+    // Event listener for the Delete button in the deletion modal
+    document.getElementById('confirmDeleteGeofenceBtn').addEventListener('click', function() {
+      if (geofenceToDeleteId) {
+        deleteGeofence(geofenceToDeleteId);
+        // Hide the modal after confirming deletion
+        var deleteModalElement = document.getElementById('deleteGeofenceModal');
+        var deleteModal = bootstrap.Modal.getInstance(deleteModalElement);
+        deleteModal.hide();
+        // Reset the variables
+        geofenceToDeleteId = null;
+        geofenceToDeleteName = '';
+        console.log("Deletion confirmed and modal closed.");
+      } else {
+        console.error("No geofence selected for deletion.");
+        showToast('No geofence selected for deletion.', 'error');
       }
-      const coordinates = geofence.coordinates;
-      window.polygon = new google.maps.Polygon({
-        paths: coordinates,
-        strokeColor: '#3CB043',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#74B72E',
-        fillOpacity: 0.35,
-        editable: true,
-        draggable: false
-      });
-      window.polygon.setMap(map);
-      window.polygon.geofenceName = geofence.name;
-      console.log("Applied geofence:", geofence.name);
+    });
 
-      // Fit the map to the polygon bounds
-      const bounds = new google.maps.LatLngBounds();
-      coordinates.forEach(coord => bounds.extend(coord));
-      map.fitBounds(bounds);
-      console.log("Map bounds adjusted to fit geofence.");
+    // Function to apply a geofence
+    async function applyGeofence(geofence) {
+      try {
+        // Remove existing polygon if any
+        if (window.polygon) {
+          window.polygon.setMap(null);
+        }
 
-      // Update saved geofence when edited
-      window.polygon.getPath().addListener('set_at', () => {
-        console.log("Geofence path updated via 'set_at'");
-        getCityNameAndSaveGeofence(window.polygon, geofence.name);
-      });
-      window.polygon.getPath().addListener('insert_at', () => {
-        console.log("Geofence path updated via 'insert_at'");
-        getCityNameAndSaveGeofence(window.polygon, geofence.name);
-      });
-      window.polygon.getPath().addListener('remove_at', () => {
-        console.log("Geofence path updated via 'remove_at'");
-        getCityNameAndSaveGeofence(window.polygon, geofence.name);
-      });
+        // Create a new polygon
+        window.polygon = new google.maps.Polygon({
+          paths: geofence.coordinates,
+          strokeColor: '#3CB043',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#74B72E',
+          fillOpacity: 0.35,
+          editable: true,
+          draggable: false
+        });
+        window.polygon.setMap(map);
+        window.polygon.geofenceName = geofence.name;
+        console.log("Applied geofence:", geofence.name);
 
-      // Set as current geofence
-      setCurrentGeofence(geofence);
+        // Fit the map to the polygon bounds
+        const bounds = new google.maps.LatLngBounds();
+        geofence.coordinates.forEach(coord => bounds.extend(coord));
+        map.fitBounds(bounds);
+        console.log("Map bounds adjusted to fit geofence.");
+
+        // Listen for geofence path changes to update the server
+        window.polygon.getPath().addListener('set_at', () => {
+          console.log("Geofence path updated via 'set_at'");
+          updateGeofenceOnServer(geofence._id || geofence.id);
+        });
+        window.polygon.getPath().addListener('insert_at', () => {
+          console.log("Geofence path updated via 'insert_at'");
+          updateGeofenceOnServer(geofence._id || geofence.id);
+        });
+        window.polygon.getPath().addListener('remove_at', () => {
+          console.log("Geofence path updated via 'remove_at'");
+          updateGeofenceOnServer(geofence._id || geofence.id);
+        });
+
+        // Set as current geofence
+        setCurrentGeofence(geofence);
+      } catch (error) {
+        console.error('Error applying geofence:', error);
+        showToast('An error occurred while applying the geofence.', 'error');
+      }
     }
 
-    function deleteGeofence(geofenceName) {
-      let savedGeofences = JSON.parse(localStorage.getItem('savedGeofences')) || [];
-      savedGeofences = savedGeofences.filter(g => g.name !== geofenceName);
-      localStorage.setItem('savedGeofences', JSON.stringify(savedGeofences));
-      console.log("Deleted geofence:", geofenceName);
+    // Function to delete a geofence by ID
+    async function deleteGeofence(geofenceId) {
+      console.log(`Attempting to delete geofence with ID: ${geofenceId}`);
 
-      // If the currently displayed geofence was deleted, remove it from the map and localStorage
-      if (window.polygon && window.polygon.geofenceName === geofenceName) {
-        window.polygon.setMap(null);
-        window.polygon = null;
-        localStorage.removeItem('currentGeofence');
-        console.log("Current geofence removed from map.");
+      try {
+        const response = await fetch(`/api/geofences/${geofenceId}`, {
+          method: 'DELETE',
+          credentials: 'include', // Include cookies for session
+        });
+
+        console.log(`DELETE request sent. Status: ${response.status}`);
+
+        if (response.ok) { // Handles 200-299 status codes
+          let result = {};
+          if (response.status !== 204) { // If there's a response body
+            try {
+              result = await response.json();
+              console.log('DELETE response JSON:', result);
+            } catch (e) {
+              console.warn('No JSON response body:', e);
+            }
+          }
+
+          const successMessage = result.message || 'Geofence deleted successfully.';
+          showToast(successMessage, 'success');
+          console.log(successMessage);
+
+          // If the deleted geofence is currently applied, remove it from the map
+          if (currentAppliedGeofenceId && geofenceId === currentAppliedGeofenceId) {
+            if (window.polygon) {
+              window.polygon.setMap(null);
+              window.polygon = null;
+              console.log("Applied geofence removed from the map.");
+            }
+            currentAppliedGeofenceId = null;
+            localStorage.removeItem('currentAppliedGeofenceId');
+            showToast('The deleted geofence has been removed from the map.', 'info');
+            console.log("Current applied geofence cleared.");
+
+            // Reset the map to default center and zoom
+            map.setCenter({ lat: 30.616249, lng: -96.336853 }); // Replace with your default coordinates
+            map.setZoom(15); // Replace with your default zoom level
+            console.log("Map reset to default center and zoom after geofence deletion.");
+          }
+
+          // Refresh the geofences list
+          loadGeofencesFromServer();
+          console.log("Geofences list refreshed.");
+        } else {
+          // Attempt to parse error message from server
+          let errorMsg = 'Failed to delete geofence.';
+          try {
+            const errorResult = await response.json();
+            errorMsg = errorResult.message || errorMsg;
+            console.log('DELETE error response JSON:', errorResult);
+          } catch (e) {
+            console.error('Error parsing error response:', e);
+          }
+          showToast(errorMsg, 'error');
+          console.error('Failed to delete geofence:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error deleting geofence:', error);
+        showToast('An error occurred while deleting the geofence.', 'error');
       }
-
-      loadSavedCustomGeofences();
     }
 
+    // Function to update a geofence on the server when edited
+    async function updateGeofenceOnServer(geofenceId) {
+      try {
+        const path = window.polygon.getPath();
+        const updatedCoordinates = [];
+        for (let i = 0; i < path.getLength(); i++) {
+          updatedCoordinates.push({
+            lat: path.getAt(i).lat(),
+            lng: path.getAt(i).lng()
+          });
+        }
+
+        // Optionally, perform reverse geocoding to update the city if needed
+
+        const response = await fetch(`/api/geofences/${geofenceId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ coordinates: updatedCoordinates, city: window.polygon.geofenceName }), // Adjust as needed
+        });
+
+        const result = await response.json();
+        console.log("Update Geofence Response:", response.status, result);
+
+        if (response.status === 200) {
+          showToast(result.message, 'success');
+          console.log("Geofence updated successfully on the server.");
+        } else {
+          showToast(result.message || 'Failed to update geofence.', 'error');
+          console.error('Failed to update geofence:', result);
+        }
+      } catch (error) {
+        console.error('Error updating geofence:', error);
+        showToast('An error occurred while updating the geofence.', 'error');
+      }
+    }
+
+    // Function to start Socket.IO connection
     function startSocketIO() {
       const socket = io(); // Connect to the Socket.IO server
       console.log("Connected to Socket.IO server.");
@@ -766,6 +941,7 @@
       });
     }
 
+    // Function to update the pet's location on the map
     function updateLocation(data) {
       if (data && data.latitude && data.longitude) {
         const gpsLocation = { lat: data.latitude, lng: data.longitude };
@@ -825,6 +1001,7 @@
       }
     }
 
+    // Function to animate the marker smoothly
     function animateMarker(marker, newPosition) {
       if (animationInterval) {
         clearInterval(animationInterval);
@@ -913,31 +1090,35 @@
         });
     }
 
-    // Theme Preference Script
-    // Check localStorage for theme preference
-    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-
-    if (currentTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      console.log("Dark mode enabled based on localStorage.");
-    } else if (currentTheme === 'light') {
-      document.body.classList.remove('dark-mode');
-      console.log("Light mode enabled based on localStorage.");
+    // Function to apply the current geofence from localStorage
+    async function applyCurrentGeofenceFromLocalStorage() {
+      const currentGeofenceId = localStorage.getItem('currentAppliedGeofenceId');
+      if (currentGeofenceId) {
+        try {
+          const response = await fetch('/api/geofences', {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (response.status === 200) {
+            const geofences = await response.json();
+            const currentGeofence = geofences.find(g => g._id === currentGeofenceId || g.id === currentGeofenceId);
+            if (currentGeofence) {
+              applyGeofence(currentGeofence);
+              console.log("Re-applied current geofence on map initialization.");
+            } else {
+              console.log("Current geofence ID not found in fetched geofences.");
+              localStorage.removeItem('currentAppliedGeofenceId');
+            }
+          } else {
+            console.error("Failed to fetch geofences for current geofence application.");
+          }
+        } catch (error) {
+          console.error("Error applying current geofence on map initialization:", error);
+        }
+      }
     }
 
-    // Automatically focus on the input field when the modal is shown
-    document.getElementById('geofenceNameModal').addEventListener('shown.bs.modal', function () {
-      document.getElementById('geofenceNameInput').focus();
-      console.log("Geofence Name Modal shown and input focused.");
-    });
-
-    // Clear error message when user starts typing
-    document.getElementById('geofenceNameInput').addEventListener('input', function () {
-      this.classList.remove('is-invalid');
-      document.getElementById('geofenceNameError').style.display = 'none';
-    });
-
-    // **Listen for changes to localStorage from other tabs/pages**
+    // Listen for changes to localStorage from other tabs/pages
     window.addEventListener('storage', function(event) {
       if (event.key === 'userEmail') {
         if (event.newValue) {
@@ -969,12 +1150,23 @@
     });
   </script>
 
+
   <!-- AOS (Animate On Scroll) Initialization --> <!-- Initialize AOS -->
   <script>
     AOS.init({
       once: true,
       duration: 1000,
     });
+
+
+    // Check localStorage for theme preference
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else if (currentTheme === 'light') {
+      document.body.classList.remove('dark-mode');
+    }
   </script>
 
   <!-- Include Google Maps API with geometry and drawing libraries -->
