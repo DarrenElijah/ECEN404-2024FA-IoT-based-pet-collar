@@ -28,7 +28,11 @@
   <!-- Include Turf.js for geospatial operations -->
   <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 
-  <script> import MyDBSCAN from "./myDBSCAN.js"</script> 
+  <script>
+
+  import MyDBSCAN from './myDBSCAN.js';
+
+  </script>
 
   <style>
     body {
@@ -316,6 +320,8 @@
       duration: 1000,
     });
 
+
+
     // Initialize variables
     var maps = {};
     var polygons = {};
@@ -372,7 +378,7 @@ function processData(data) {
       tabLink.classList.remove('disabled');
 
       // **DBSCAN Parameters**
-      const eps = 50; // Maximum distance (in meters) to consider for clustering
+      const eps = 500; // Maximum distance (in meters) to consider for clustering
       const minPts = 5; // Minimum number of points to form a cluster
 
       // **Prepare Data for DBSCAN**
