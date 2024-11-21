@@ -28,6 +28,8 @@
   <!-- Include Turf.js for geospatial operations -->
   <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 
+  <script> import MyDBSCAN from "./myDBSCAN.js"</script> 
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -340,45 +342,65 @@
     }
 
 
-    // Process data received from the server
-    function processData(data) {
-      // Group data by day of the week
-      dataByDay = {};
-      hullPointsByDay = {};
+  // Process data received from the server
+function processData(data) {
+  // Group data by day of the week
+  dataByDay = {};
+  hullPointsByDay = {};
 
-      data.forEach(point => {
-        var date = new Date(point.timestamp);
-        var dayIndex = date.getDay();
-        var day = daysOfWeek[dayIndex];
+  data.forEach(point => {
+    var date = new Date(point.timestamp);
+    var dayIndex = date.getDay();
+    var day = daysOfWeek[dayIndex];
 
-        if (!dataByDay[day]) {
-          dataByDay[day] = [];
-        }
-
-        dataByDay[day].push({
-          lat: point.latitude,
-          lng: point.longitude,
-          timestamp: point.timestamp,
-        });
-      });
-
-      // For each day, compute the convex hull and store hull points
-      daysOfWeek.slice(0, 7).forEach(day => {
-        const tabLink = document.getElementById(day + '-tab');
-        if (dataByDay[day] && dataByDay[day].length > 0) {
-          // Enable tab if data exists
-          tabLink.classList.remove('disabled');
-          var hullPoints = computeConvexHull(dataByDay[day]);
-          hullPointsByDay[day] = hullPoints;
-        } else {
-          // Disable tab if no data
-          tabLink.classList.add('disabled');
-        }
-      });
-
-      // Update the maps
-      updateMaps();
+    if (!dataByDay[day]) {
+      dataByDay[day] = [];
     }
+
+    dataByDay[day].push({
+      lat: point.latitude,
+      lng: point.longitude,
+      timestamp: point.timestamp,
+    });
+  });
+
+  // For each day, apply DBSCAN to remove outliers and compute the convex hull
+  daysOfWeek.slice(0, 7).forEach(day => {
+    const tabLink = document.getElementById(day + '-tab');
+    if (dataByDay[day] && dataByDay[day].length > 0) {
+      // Enable tab if data exists
+      tabLink.classList.remove('disabled');
+
+      // **DBSCAN Parameters**
+      const eps = 50; // Maximum distance (in meters) to consider for clustering
+      const minPts = 5; // Minimum number of points to form a cluster
+
+      // **Prepare Data for DBSCAN**
+      const dbscanData = dataByDay[day].map(point => [point.lat, point.lng]);
+
+      // **Initialize and Run DBSCAN**
+      const dbscan = new MyDBSCAN(eps, minPts);
+      const labels = dbscan.cluster(dbscanData);
+
+      // **Filter Out Noise Points**
+      const filteredData = dataByDay[day].filter((_, index) => labels[index] !== -1);
+
+      // **Update dataByDay with Filtered Data**
+      dataByDay[day] = filteredData;
+
+      // **Compute Convex Hull with Filtered Data**
+      var hullPoints = computeConvexHull(filteredData);
+      hullPointsByDay[day] = hullPoints;
+    } else {
+      // Disable tab if no data
+      tabLink.classList.add('disabled');
+    }
+  });
+
+  // Update the maps
+  updateMaps();
+}
+
 
     // Convex Hull algorithm (Graham Scan)
     function computeConvexHull(points) {
