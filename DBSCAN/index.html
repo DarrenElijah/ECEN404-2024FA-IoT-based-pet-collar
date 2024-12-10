@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DBSCAN Clustering Demo - Texas A&M University</title>
+  <!-- Leaflet.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Optional: Leaflet.js MarkerCluster CSS for better marker management -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    #map {
+      height: 600px;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 40px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      max-width: 800px;
+      margin-bottom: 40px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    #output {
+      white-space: pre-wrap;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+      max-width: 800px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>DBSCAN Clustering Demo - Texas A&M University</h1>
+  
+  <h2>Clustering Visualization</h2>
+  <div id="map"></div>
+  
+  <h2>Clustering Results</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Cluster ID</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTableBody">
+      <!-- Rows will be populated by main.js -->
+    </tbody>
+  </table>
+  
+  <h2>Console Output</h2>
+  <pre id="output"></pre>
+
+  <!-- Leaflet.js JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Optional: Leaflet.js MarkerCluster JS for better marker management -->
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  
+  <!-- Include your scripts -->
+  <script type="module" src="./main.js"></script>
+  
+  <script>
+    // Redirect console.log to display in the <pre> element
+    (function() {
+      const output = document.getElementById('output');
+      const originalLog = console.log;
+      console.log = function(...args) {
+        originalLog.apply(console, args);
+        args.forEach(arg => {
+          if (typeof arg === 'object') {
+            output.textContent += JSON.stringify(arg, null, 2) + '\n';
+          } else {
+            output.textContent += arg + '\n';
+          }
+        });
+      };
+    })();
+  </script>
+</body>
+</html>
